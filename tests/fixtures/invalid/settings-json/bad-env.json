@@ -1,0 +1,7 @@
+{
+  "env": {
+    "GOOD_VAR": "value",
+    "BAD_VAR": 123
+  },
+  "unknownField": true
+}

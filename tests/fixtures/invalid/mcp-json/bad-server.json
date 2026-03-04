@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "My Server": {
+      "type": "http"
+    },
+    "bad-url": {
+      "type": "http",
+      "url": "not-a-url"
+    },
+    "wrong-type": {
+      "type": "websocket",
+      "url": "https://example.com/mcp"
+    }
+  }
+}

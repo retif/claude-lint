@@ -1,0 +1,5 @@
+{
+  "name": "test-plugin",
+  "version": "not-semver",
+  "description": "A plugin with invalid version"
+}

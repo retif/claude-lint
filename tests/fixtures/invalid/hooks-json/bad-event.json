@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "OnSave": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo test"
+          }
+        ]
+      }
+    ]
+  }
+}

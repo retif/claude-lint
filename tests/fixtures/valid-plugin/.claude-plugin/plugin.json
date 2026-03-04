@@ -1,0 +1,12 @@
+{
+	"name": "test-plugin",
+	"version": "1.0.0",
+	"description": "A valid test plugin for fixture tests",
+	"author": {
+		"name": "test",
+		"email": "test@example.com"
+	},
+	"repository": "https://example.com/test-plugin.git",
+	"license": "MIT",
+	"keywords": ["test", "fixture"]
+}

@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Check if this write operation is safe.",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
