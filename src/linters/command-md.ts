@@ -1,3 +1,4 @@
+import { TOOLS } from "../contracts.js";
 import type { Linter, LintDiagnostic, LinterConfig, Severity } from "../types.js";
 import { isRuleEnabled, getRuleSeverity } from "../types.js";
 import { parseFrontmatter } from "../utils/frontmatter.js";
@@ -10,12 +11,6 @@ const RULES: RuleDef[] = [
   { id: "command-md/allowed-tools-valid", defaultSeverity: "warning" },
   { id: "command-md/body-present", defaultSeverity: "warning" },
 ];
-
-const KNOWN_TOOLS = new Set([
-  "Read", "Write", "Edit", "Bash", "Glob", "Grep",
-  "WebFetch", "WebSearch", "Agent", "AskUserQuestion",
-  "NotebookEdit", "TodoWrite", "EnterPlanMode", "ExitPlanMode",
-]);
 
 function diag(
   config: LinterConfig,
@@ -63,7 +58,7 @@ export const commandMdLinter: Linter = {
       const tools = fm.data["allowed-tools"];
       if (Array.isArray(tools)) {
         for (const t of tools) {
-          if (typeof t === "string" && !KNOWN_TOOLS.has(t)) {
+          if (typeof t === "string" && !TOOLS.has(t)) {
             push(diag(config, filePath, "command-md/allowed-tools-valid", "warning",
               `Unknown tool "${t}" in allowed-tools`));
           }

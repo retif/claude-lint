@@ -1,12 +1,8 @@
 import semver from "semver";
+import { PLUGIN_JSON_FIELDS } from "../contracts.js";
 import type { Linter, LintDiagnostic, LinterConfig, Severity } from "../types.js";
 import { isRuleEnabled, getRuleSeverity } from "../types.js";
 import { isKebabCase } from "../utils/kebab-case.js";
-
-const KNOWN_FIELDS = new Set([
-  "name", "version", "description", "author",
-  "repository", "homepage", "license", "keywords",
-]);
 
 const SPDX_COMMON = new Set([
   "MIT", "Apache-2.0", "GPL-2.0-only", "GPL-3.0-only",
@@ -182,10 +178,10 @@ export const pluginJsonLinter: Linter = {
 
     // unknown fields
     for (const key of Object.keys(parsed)) {
-      if (!KNOWN_FIELDS.has(key)) {
+      if (!PLUGIN_JSON_FIELDS.has(key)) {
         const p = pos(key);
         push(diag(config, filePath, "plugin-json/no-unknown-fields", "info",
-          `Unknown field "${key}" (known: ${[...KNOWN_FIELDS].join(", ")})`, p?.line, p?.column));
+          `Unknown field "${key}" (known: ${[...PLUGIN_JSON_FIELDS].join(", ")})`, p?.line, p?.column));
       }
     }
 

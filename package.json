@@ -1,10 +1,10 @@
 {
-	"name": "@retif/claude-lint",
+	"name": "claudecode-linter",
 	"version": "0.1.0",
 	"description": "Standalone linter for Claude Code plugin artifacts",
 	"type": "module",
 	"bin": {
-		"claude-lint": "./dist/index.js"
+		"claudecode-linter": "dist/index.js"
 	},
 	"main": "./dist/index.js",
 	"scripts": {
@@ -12,11 +12,16 @@
 		"dev": "tsc --watch",
 		"test": "vitest run",
 		"test:watch": "vitest",
-		"prepublishOnly": "npm run build"
+		"prepublishOnly": "npm run build",
+		"deps:check": "ncu",
+		"deps:update": "ncu -u",
+		"knip": "knip --exclude types",
+		"extract-contracts": "tsx scripts/extract-contracts.ts",
+		"generate-contracts": "tsx scripts/generate-contracts.ts"
 	},
 	"files": [
 		"dist/",
-		".claude-lint.defaults.yaml",
+		".claudecode-lint.defaults.yaml",
 		"README.md"
 	],
 	"keywords": [
@@ -31,17 +36,23 @@
 		"node": ">=18"
 	},
 	"dependencies": {
-		"chalk": "^5.3.0",
-		"commander": "^12.0.0",
-		"glob": "^10.3.0",
+		"chalk": "^5.6.2",
+		"commander": "^14.0.3",
+		"glob": "^13.0.6",
+		"minimatch": "^10.2.4",
 		"prettier": "^3.8.1",
-		"semver": "^7.6.0",
-		"yaml": "^2.4.0"
+		"semver": "^7.7.4",
+		"yaml": "^2.8.2"
 	},
 	"devDependencies": {
-		"@types/node": "^20.0.0",
-		"@types/semver": "^7.5.0",
-		"typescript": "^5.4.0",
-		"vitest": "1.6.0"
+		"@types/node": "^25.3.3",
+		"@types/semver": "^7.7.1",
+		"acorn": "^8.16.0",
+		"acorn-walk": "^8.3.5",
+		"knip": "^5.85.0",
+		"npm-check-updates": "^19.6.3",
+		"tsx": "^4.21.0",
+		"typescript": "^5.9.3",
+		"vitest": "4.0.18"
 	}
 }

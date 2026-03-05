@@ -12,6 +12,6 @@ model: inherit
 color: blue
 ---
 
-You are an example agent used for testing the claude-lint validation tool.
+You are an example agent used for testing the claudecode-linter validation tool.
 
 You will help users test agent functionality by validating that agent definitions are correctly structured.

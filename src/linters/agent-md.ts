@@ -1,3 +1,4 @@
+import { AGENT_MODELS, AGENT_COLORS } from "../contracts.js";
 import type { Linter, LintDiagnostic, LinterConfig, Severity } from "../types.js";
 import { isRuleEnabled, getRuleSeverity } from "../types.js";
 import { parseFrontmatter } from "../utils/frontmatter.js";
@@ -18,9 +19,6 @@ const RULES: RuleDef[] = [
   { id: "agent-md/system-prompt-length", defaultSeverity: "warning" },
   { id: "agent-md/system-prompt-second-person", defaultSeverity: "info" },
 ];
-
-const VALID_MODELS = new Set(["inherit", "sonnet", "opus", "haiku"]);
-const VALID_COLORS = new Set(["blue", "cyan", "green", "yellow", "magenta", "red"]);
 
 function diag(
   config: LinterConfig,
@@ -84,18 +82,18 @@ export const agentMdLinter: Linter = {
     if (!("model" in fm.data) || typeof fm.data.model !== "string") {
       push(diag(config, filePath, "agent-md/model-required", "error",
         "\"model\" is required in frontmatter"));
-    } else if (!VALID_MODELS.has(fm.data.model)) {
+    } else if (!AGENT_MODELS.has(fm.data.model)) {
       push(diag(config, filePath, "agent-md/model-valid", "warning",
-        `"model" must be one of: ${[...VALID_MODELS].join(", ")} (got "${fm.data.model}")`));
+        `"model" must be one of: ${[...AGENT_MODELS].join(", ")} (got "${fm.data.model}")`));
     }
 
     // color
     if (!("color" in fm.data) || typeof fm.data.color !== "string") {
       push(diag(config, filePath, "agent-md/color-required", "error",
         "\"color\" is required in frontmatter"));
-    } else if (!VALID_COLORS.has(fm.data.color)) {
+    } else if (!AGENT_COLORS.has(fm.data.color)) {
       push(diag(config, filePath, "agent-md/color-valid", "warning",
-        `"color" must be one of: ${[...VALID_COLORS].join(", ")} (got "${fm.data.color}")`));
+        `"color" must be one of: ${[...AGENT_COLORS].join(", ")} (got "${fm.data.color}")`));
     }
 
     // system prompt (body)

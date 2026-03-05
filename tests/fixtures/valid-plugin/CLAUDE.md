@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a valid CLAUDE.md for testing the claude-lint tool.
+This is a valid CLAUDE.md for testing the claudecode-linter tool.
 
 ## Guidelines
 

@@ -1,4 +1,5 @@
 import { basename } from "node:path";
+import { SETTINGS_USER_FIELDS, SETTINGS_PROJECT_FIELDS, TOOLS } from "../contracts.js";
 import type { Linter, LintDiagnostic, LinterConfig, Severity, ConfigScope } from "../types.js";
 import { isRuleEnabled, getRuleSeverity } from "../types.js";
 
@@ -20,26 +21,6 @@ const RULES: RuleDef[] = [
   { id: "settings-json/plugins-format", defaultSeverity: "warning" },
   { id: "settings-json/skip-prompt-boolean", defaultSeverity: "error" },
 ];
-
-// Fields valid at user level (settings.json)
-const USER_FIELDS = new Set([
-  "env", "permissions", "enabledPlugins",
-  "skipDangerousModePermissionPrompt",
-]);
-
-// Fields valid at project/subdirectory level (settings.local.json)
-const PROJECT_FIELDS = new Set([
-  "permissions",
-]);
-
-const KNOWN_TOOLS = new Set([
-  "Read", "Write", "Edit", "Bash", "Glob", "Grep",
-  "WebFetch", "WebSearch", "Agent", "AskUserQuestion",
-  "NotebookEdit", "TodoWrite", "EnterPlanMode", "ExitPlanMode",
-  "Skill", "EnterWorktree", "SendMessage", "TaskCreate",
-  "TaskUpdate", "TaskGet", "TaskList", "TaskStop", "TaskOutput",
-  "TeamCreate", "TeamDelete", "NotebookRead",
-]);
 
 function findKeyPosition(content: string, key: string): { line: number; column: number } | undefined {
   const re = new RegExp(`"${key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"\\s*:`);
@@ -103,16 +84,16 @@ export const settingsJsonLinter: Linter = {
     }
 
     // Determine which fields are valid for this scope
-    const knownFields = (scope === "user" || !scope) ? USER_FIELDS : PROJECT_FIELDS;
+    const knownFields = (scope === "user" || !scope) ? SETTINGS_USER_FIELDS : SETTINGS_PROJECT_FIELDS;
 
     // unknown/misplaced top-level fields
     for (const key of Object.keys(parsed)) {
       if (!knownFields.has(key)) {
         const p = findKeyPosition(content, key);
-        if (USER_FIELDS.has(key) && scope && scope !== "user") {
+        if (SETTINGS_USER_FIELDS.has(key) && scope && scope !== "user") {
           push(diag(config, filePath, "settings-json/scope-field", "warning",
             `"${key}" is a user-level field — it has no effect in project-level settings.local.json`, p?.line, p?.column));
-        } else if (!USER_FIELDS.has(key)) {
+        } else if (!SETTINGS_USER_FIELDS.has(key)) {
           push(diag(config, filePath, "settings-json/no-unknown-fields", "warning",
             `Unknown top-level field "${key}"`, p?.line, p?.column));
         }
@@ -146,7 +127,7 @@ export const settingsJsonLinter: Linter = {
               const toolMatch = entry.match(/^([A-Za-z]+)(\(.*\))?$/);
               if (toolMatch) {
                 const toolName = toolMatch[1];
-                if (!KNOWN_TOOLS.has(toolName)) {
+                if (!TOOLS.has(toolName)) {
                   // Allow MCP tool patterns (mcp__*)
                   if (!entry.startsWith("mcp__")) {
                     push(diag(config, filePath, "settings-json/allow-known-tools", "warning",

@@ -5,7 +5,7 @@ description: This skill should be used when the user asks to "run example" or "t
 
 # Example Skill
 
-This is an example skill used for testing the claude-lint tool.
+This is an example skill used for testing the claudecode-linter tool.
 
 ## When to Use
 

@@ -53,11 +53,6 @@ export interface DiscoveredArtifact {
   scope?: ConfigScope;
 }
 
-export interface LintContext {
-  config: LinterConfig;
-  scope?: ConfigScope;
-}
-
 export function isRuleEnabled(
   config: LinterConfig,
   ruleId: string,

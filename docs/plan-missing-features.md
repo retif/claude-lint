@@ -28,7 +28,7 @@
 
 ### 7. Ignore Support
 - Add `--ignore <glob>` CLI flag
-- Load `.claude-lint-ignore` file (gitignore-style patterns)
+- Load `.claudecode-lint-ignore` file (gitignore-style patterns)
 - Filter discovered artifacts before linting
 
 ### 8. Tests for All New Features

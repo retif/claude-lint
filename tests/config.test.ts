@@ -6,13 +6,13 @@ import { loadConfig, mergeCliRules } from "../src/config.js";
 
 describe("config", () => {
   it("returns default config when no file exists", () => {
-    const config = loadConfig("/nonexistent/path/.claude-lint.yaml");
+    const config = loadConfig("/nonexistent/path/.claudecode-lint.yaml");
     expect(config.rules).toEqual({});
   });
 
   it("loads config from yaml file", () => {
-    const dir = mkdtempSync(join(tmpdir(), "claude-lint-test-"));
-    const path = join(dir, ".claude-lint.yaml");
+    const dir = mkdtempSync(join(tmpdir(), "claudecode-linter-test-"));
+    const path = join(dir, ".claudecode-lint.yaml");
     writeFileSync(path, 'rules:\n  plugin-json/no-unknown-fields: false\n  skill-md/body-word-count:\n    enabled: true\n    severity: info\n');
 
     try {

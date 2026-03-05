@@ -1,3 +1,4 @@
+import { SKILL_FRONTMATTER } from "../contracts.js";
 import type { Linter, LintDiagnostic, LinterConfig, Severity } from "../types.js";
 import { isRuleEnabled, getRuleSeverity } from "../types.js";
 import { parseFrontmatter } from "../utils/frontmatter.js";
@@ -18,11 +19,6 @@ const RULES: RuleDef[] = [
   { id: "skill-md/body-word-count", defaultSeverity: "warning" },
   { id: "skill-md/body-has-headers", defaultSeverity: "info" },
 ];
-
-const KNOWN_FRONTMATTER = new Set([
-  "name", "description", "version", "license",
-  "allowed-tools", "metadata", "compatibility",
-]);
 
 function diag(
   config: LinterConfig,
@@ -97,9 +93,9 @@ export const skillMdLinter: Linter = {
 
     // unknown frontmatter keys
     for (const key of Object.keys(fm.data)) {
-      if (!KNOWN_FRONTMATTER.has(key)) {
+      if (!SKILL_FRONTMATTER.has(key)) {
         push(diag(config, filePath, "skill-md/no-unknown-frontmatter", "warning",
-          `Unknown frontmatter key "${key}" (known: ${[...KNOWN_FRONTMATTER].join(", ")})`));
+          `Unknown frontmatter key "${key}" (known: ${[...SKILL_FRONTMATTER].join(", ")})`));
       }
     }
 

@@ -40,7 +40,7 @@ export function loadConfig(configPath?: string): LinterConfig {
 
 function findConfigFile(): string | undefined {
   // 1. Check cwd
-  const cwdCandidates = [".claude-lint.yaml", ".claude-lint.yml"];
+  const cwdCandidates = [".claudecode-lint.yaml", ".claudecode-lint.yml"];
   for (const name of cwdCandidates) {
     if (existsSync(name)) return name;
   }
@@ -53,7 +53,7 @@ function findConfigFile(): string | undefined {
   }
 
   // 3. Fall back to bundled defaults
-  const bundled = join(__dirname, "..", ".claude-lint.defaults.yaml");
+  const bundled = join(__dirname, "..", ".claudecode-lint.defaults.yaml");
   if (existsSync(bundled)) return bundled;
 
   return undefined;

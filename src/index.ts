@@ -110,7 +110,7 @@ function simpleDiff(
 const program = new Command();
 
 program
-	.name("claude-lint")
+	.name("claudecode-linter")
 	.description("Linter for Claude Code plugin artifacts")
 	.version("0.1.0")
 	.argument("[paths...]", "Plugin directories or individual files", ["."])
@@ -142,10 +142,10 @@ program
 			if (opts.init !== undefined) {
 				const __filename = fileURLToPath(import.meta.url);
 				const pkgDir = dirname(dirname(__filename));
-				const defaultsFile = join(pkgDir, ".claude-lint.defaults.yaml");
+				const defaultsFile = join(pkgDir, ".claudecode-lint.defaults.yaml");
 				const targetDir =
 					typeof opts.init === "string" ? resolve(opts.init) : process.cwd();
-				const targetFile = join(targetDir, ".claude-lint.yaml");
+				const targetFile = join(targetDir, ".claudecode-lint.yaml");
 				if (existsSync(targetFile)) {
 					process.stderr.write(`${targetFile} already exists\n`);
 					process.exit(1);

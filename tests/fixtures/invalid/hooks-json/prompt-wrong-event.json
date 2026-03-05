@@ -1,6 +1,6 @@
 {
   "hooks": {
-    "SessionStart": [
+    "SessionEnd": [
       {
         "matcher": "",
         "hooks": [

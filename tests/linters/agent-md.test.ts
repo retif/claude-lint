@@ -54,7 +54,7 @@ describe("agent-md linter", () => {
   });
 
   it("reports invalid color", () => {
-    const content = "---\nname: bad-color\ndescription: |\n  <example>\n  user: test\n  </example>\nmodel: sonnet\ncolor: purple\n---\n\nYou are a test agent.";
+    const content = "---\nname: bad-color\ndescription: |\n  <example>\n  user: test\n  </example>\nmodel: sonnet\ncolor: chartreuse\n---\n\nYou are a test agent.";
     const diags = agentMdLinter.lint("test.md", content, CONFIG);
     expect(diags.some((d) => d.rule === "agent-md/color-valid")).toBe(true);
   });

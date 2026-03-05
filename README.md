@@ -1,4 +1,4 @@
-# claude-lint
+# claudecode-linter
 
 Standalone linter for [Claude Code](https://docs.anthropic.com/en/docs/claude-code) plugin artifacts.
 
@@ -7,13 +7,13 @@ Validates `plugin.json`, `SKILL.md`, agent/command markdown, `hooks.json`, `mcp.
 ## Install
 
 ```bash
-npm install -g claude-lint
+npm install -g claudecode-linter
 ```
 
 Or run directly:
 
 ```bash
-npx claude-lint ~/projects/my-plugin/
+npx claudecode-linter ~/projects/my-plugin/
 ```
 
 ## Usage
@@ -24,26 +24,26 @@ Check plugin artifacts for errors without modifying files. This is the default m
 
 ```bash
 # Lint a plugin directory
-claude-lint --lint path/to/plugin/
-claude-lint path/to/plugin/  # same thing
+claudecode-linter --lint path/to/plugin/
+claudecode-linter path/to/plugin/  # same thing
 
 # Lint multiple paths
-claude-lint plugin-a/ plugin-b/
+claudecode-linter plugin-a/ plugin-b/
 
 # JSON output
-claude-lint --output json path/to/plugin/
+claudecode-linter --output json path/to/plugin/
 
 # Errors only
-claude-lint --quiet path/to/plugin/
+claudecode-linter --quiet path/to/plugin/
 
 # Filter by rule
-claude-lint --rule plugin-json/name-kebab-case path/to/plugin/
+claudecode-linter --rule plugin-json/name-kebab-case path/to/plugin/
 
 # Enable/disable specific rules
-claude-lint --enable skill-md/word-count --disable claude-md/no-todos path/to/plugin/
+claudecode-linter --enable skill-md/word-count --disable claude-md/no-todos path/to/plugin/
 
 # List all available rules
-claude-lint --list-rules
+claudecode-linter --list-rules
 ```
 
 ### Format
@@ -52,7 +52,7 @@ Reformat all artifacts for consistent style (sorted keys, normalized indentation
 
 ```bash
 # Format all artifacts in place
-claude-lint --format path/to/plugin/
+claudecode-linter --format path/to/plugin/
 ```
 
 ### Fix
@@ -61,16 +61,16 @@ Fix lint violations in place, then lint the result — output shows only issues 
 
 ```bash
 # Fix issues in place
-claude-lint --fix path/to/plugin/
+claudecode-linter --fix path/to/plugin/
 
 # Preview fixes without writing (shows diff)
-claude-lint --fix-dry-run path/to/plugin/
+claudecode-linter --fix-dry-run path/to/plugin/
 ```
 
 ### Example Output
 
 ```
-$ claude-lint my-plugin/
+$ claudecode-linter my-plugin/
 
 my-plugin/skills/example/SKILL.md
   warn   Body has 117 words (recommended: 500-5000)  skill-md/body-word-count:5
@@ -85,7 +85,7 @@ my-plugin/.claude/settings.json
 ```
 
 ```
-$ claude-lint --fix-dry-run my-plugin/
+$ claudecode-linter --fix-dry-run my-plugin/
 
 --- my-plugin/skills/deploy/SKILL.md
 +++ my-plugin/skills/deploy/SKILL.md (fixed)
@@ -96,7 +96,7 @@ $ claude-lint --fix-dry-run my-plugin/
 ```
 
 ```
-$ claude-lint my-plugin/
+$ claudecode-linter my-plugin/
 No issues found.
 ```
 
@@ -118,20 +118,20 @@ No issues found.
 Generate a config file with all rules and their default severities:
 
 ```bash
-# Create .claude-lint.yaml in current directory
-claude-lint --init
+# Create .claudecode-lint.yaml in current directory
+claudecode-linter --init
 
 # Create in a specific directory
-claude-lint --init ~/projects/my-plugin/
+claudecode-linter --init ~/projects/my-plugin/
 
 # Create in home directory (applies globally)
-claude-lint --init ~
+claudecode-linter --init ~
 ```
 
-claude-lint looks for config in this order:
+claudecode-linter looks for config in this order:
 
-1. `.claude-lint.yaml` or `.claude-lint.yml` in the current directory
-2. `.claude-lint.yaml` or `.claude-lint.yml` in `$HOME`
+1. `.claudecode-lint.yaml` or `.claudecode-lint.yml` in the current directory
+2. `.claudecode-lint.yaml` or `.claudecode-lint.yml` in `$HOME`
 3. Bundled defaults (all rules enabled at their default severity)
 
 Example config:
@@ -168,6 +168,15 @@ Formatting is powered by [prettier](https://prettier.io/) for consistent JSON an
 | 1 | Lint errors found |
 | 2 | Fatal error |
 
+## Versioning
+
+This linter's version tracks the Claude Code version it was extracted from:
+
+- **Contract sync**: version matches Claude Code exactly (e.g., `2.1.69` for Claude Code v2.1.69)
+- **Linter-only bugfix**: pre-release suffix `2.1.69-patch.1`, `2.1.69-patch.2`, etc.
+
+Pre-release versions sort below the base version in npm (`2.1.69-patch.1 < 2.1.69`), but `^2.1.68` will still resolve them. When the next Claude Code version is released (e.g., `2.1.70`), it supersedes all patches.
+
 ## Development
 
 ```bash
@@ -175,6 +184,34 @@ npm install
 npm run build
 npm test
 ```
+
+### Updating contracts
+
+When a new Claude Code version is released:
+
+```bash
+# 1. Extract contracts from latest Claude Code
+npm run extract-contracts
+
+# Or extract from a specific version
+npm run extract-contracts -- --version 2.1.58
+
+# 2. Generate src/contracts.ts from the JSON
+npm run generate-contracts
+
+# 3. Build and test
+npm run build && npm test
+```
+
+The `--version` flag is useful for testing the CI pipeline: extract an older version, commit it, then let CI detect the newer latest version and run the full release flow.
+
+Use `--changelog` to also write a `CHANGELOG_ENTRY.md` file with a markdown drift report (used by CI):
+
+```bash
+npm run extract-contracts -- --changelog
+```
+
+This is automated in CI via `.woodpecker/release.yml`.
 
 ## License
 

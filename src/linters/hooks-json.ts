@@ -1,3 +1,4 @@
+import { HOOK_EVENTS, PROMPT_EVENTS } from "../contracts.js";
 import type { Linter, LintDiagnostic, LinterConfig, Severity } from "../types.js";
 import { isRuleEnabled, getRuleSeverity } from "../types.js";
 
@@ -14,16 +15,6 @@ const RULES: RuleDef[] = [
   { id: "hooks-json/prompt-event-support", defaultSeverity: "warning" },
   { id: "hooks-json/timeout-range", defaultSeverity: "warning" },
 ];
-
-const VALID_EVENTS = new Set([
-  "PreToolUse", "PostToolUse", "UserPromptSubmit",
-  "Stop", "SubagentStop", "SessionStart", "SessionEnd",
-  "PreCompact", "Notification",
-]);
-
-const PROMPT_EVENTS = new Set([
-  "Stop", "SubagentStop", "UserPromptSubmit", "PreToolUse",
-]);
 
 function findKeyPosition(content: string, key: string): { line: number; column: number } | undefined {
   const re = new RegExp(`"${key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"\\s*:`);
@@ -92,9 +83,9 @@ export const hooksJsonLinter: Linter = {
     for (const [eventName, matchers] of Object.entries(hooks)) {
       const ep = findKeyPosition(content, eventName);
       // valid event name
-      if (!VALID_EVENTS.has(eventName)) {
+      if (!HOOK_EVENTS.has(eventName)) {
         push(diag(config, filePath, "hooks-json/valid-event-names", "error",
-          `Invalid event name "${eventName}" (valid: ${[...VALID_EVENTS].join(", ")})`, ep?.line, ep?.column));
+          `Invalid event name "${eventName}" (valid: ${[...HOOK_EVENTS].join(", ")})`, ep?.line, ep?.column));
         continue;
       }
 

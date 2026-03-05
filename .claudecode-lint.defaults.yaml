@@ -1,5 +1,5 @@
-# claude-lint default configuration
-# Copy this file to .claude-lint.yaml in your project root to customize.
+# claudecode-lint default configuration
+# Copy this file to .claudecode-lint.yaml in your project root to customize.
 # Set a rule to `false` to disable it, or override its severity.
 #
 # Examples:

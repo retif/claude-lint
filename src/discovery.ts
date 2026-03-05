@@ -10,12 +10,12 @@ const CLAUDE_USER_DIR = join(homedir(), ".claude");
 export interface DiscoverOptions {
   /** Filter artifacts by scope, or override detected scope */
   scope?: ConfigScope;
-  /** Glob patterns to ignore (in addition to .claude-lint-ignore) */
+  /** Glob patterns to ignore (in addition to .claudecode-lint-ignore) */
   ignore?: string[];
 }
 
 function loadIgnoreFile(dir: string): string[] {
-  const ignoreFile = join(dir, ".claude-lint-ignore");
+  const ignoreFile = join(dir, ".claudecode-lint-ignore");
   if (!existsSync(ignoreFile)) return [];
   return readFileSync(ignoreFile, "utf-8")
     .split("\n")
@@ -39,7 +39,7 @@ export function discoverArtifacts(targetPath: string, options?: DiscoverOptions)
   const resolved = resolve(targetPath);
   const stat = statSync(resolved);
 
-  // Combine .claude-lint-ignore patterns with CLI --ignore patterns
+  // Combine .claudecode-lint-ignore patterns with CLI --ignore patterns
   const ignoreDir = stat.isDirectory() ? resolved : dirname(resolved);
   const ignorePatterns = [
     ...loadIgnoreFile(ignoreDir),

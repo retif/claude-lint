@@ -1,4 +1,5 @@
 import { basename } from "node:path";
+import { MCP_SERVER_FIELDS } from "../contracts.js";
 import type { Linter, LintDiagnostic, LinterConfig, Severity, ConfigScope } from "../types.js";
 import { isRuleEnabled, getRuleSeverity } from "../types.js";
 import { isKebabCase } from "../utils/kebab-case.js";
@@ -23,10 +24,6 @@ const RULES: RuleDef[] = [
   { id: "mcp-json/no-unknown-server-fields", defaultSeverity: "info" },
   { id: "mcp-json/no-unknown-root-fields", defaultSeverity: "info" },
 ];
-
-const KNOWN_SERVER_FIELDS = new Set([
-  "type", "url", "command", "args", "env", "cwd",
-]);
 
 function findKeyPosition(content: string, key: string): { line: number; column: number } | undefined {
   const re = new RegExp(`"${key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"\\s*:`);
@@ -184,7 +181,7 @@ export const mcpJsonLinter: Linter = {
 
       // unknown fields
       for (const key of Object.keys(server)) {
-        if (!KNOWN_SERVER_FIELDS.has(key)) {
+        if (!MCP_SERVER_FIELDS.has(key)) {
           push(diag(config, filePath, "mcp-json/no-unknown-server-fields", "info",
             `Server "${name}" has unknown field "${key}"`, sp?.line, sp?.column));
         }
