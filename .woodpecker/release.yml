@@ -78,7 +78,13 @@ steps:
         from_secret: gitea_token
     commands:
       - |
+        set -ex
+        echo "=== Debug ==="
+        ls -la .claude-code-version
+        cat .claude-code-version
+        echo "GITEA_TOKEN length: ${#GITEA_TOKEN}"
         VERSION=$(cat .claude-code-version)
+        echo "VERSION=$VERSION"
         git config user.name "Woodpecker CI"
         git config user.email "ci@woodpecker"
         git add -A
