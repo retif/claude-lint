@@ -8,25 +8,26 @@ function fix(content: string) {
 }
 
 describe("hooks-json fixer", () => {
-  it("sorts top-level keys alphabetically", () => {
+  it("sorts top-level keys alphabetically", async () => {
     const input = JSON.stringify({ PreToolUse: [], PostToolUse: [], Notification: [] });
-    const result = JSON.parse(fix(input));
+    const result = JSON.parse(await fix(input));
     const keys = Object.keys(result);
     expect(keys).toEqual(["Notification", "PostToolUse", "PreToolUse"]);
   });
 
-  it("adds trailing newline", () => {
+  it("adds trailing newline", async () => {
     const input = JSON.stringify({ hooks: {} });
-    expect(fix(input).endsWith("\n")).toBe(true);
+    expect((await fix(input)).endsWith("\n")).toBe(true);
   });
 
-  it("uses 2-space indent", () => {
-    const input = JSON.stringify({ hooks: {} });
-    expect(fix(input)).toContain("  ");
-    expect(fix(input)).not.toContain("\t");
+  it("uses 2-space indent", async () => {
+    const input = JSON.stringify({ PreToolUse: [{ type: "command", command: "echo test" }], PostToolUse: [] });
+    const result = await fix(input);
+    expect(result).toContain("  ");
+    expect(result).not.toContain("\t");
   });
 
-  it("returns invalid JSON unchanged", () => {
-    expect(fix("{bad")).toBe("{bad");
+  it("returns invalid JSON unchanged", async () => {
+    expect(await fix("{bad")).toBe("{bad");
   });
 });

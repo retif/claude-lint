@@ -116,7 +116,7 @@ program
   .option("--rule <rule>", "Run only this single rule ID")
   .option("--list-rules", "Print all rules with their default severity and exit")
   .option("--fix-dry-run", "Run fixers but print diff instead of writing")
-  .action((paths: string[], opts) => {
+  .action(async (paths: string[], opts) => {
     try {
       if (opts.listRules) {
         for (const rule of ALL_RULES) {
@@ -155,7 +155,7 @@ program
           if (opts.format) {
             const fixer = FIXERS[artifact.artifactType];
             if (fixer) {
-              const fixedContent = fixer.fix(artifact.filePath, content, config);
+              const fixedContent = await fixer.fix(artifact.filePath, content, config);
               if (fixedContent !== content) {
                 writeFileSync(artifact.filePath, fixedContent);
                 formatted.push(relPath);
@@ -170,7 +170,7 @@ program
           if (opts.fix) {
             const fixer = FIXERS[artifact.artifactType];
             if (fixer) {
-              const fixedContent = fixer.fix(artifact.filePath, content, config);
+              const fixedContent = await fixer.fix(artifact.filePath, content, config);
               if (fixedContent !== content) {
                 writeFileSync(artifact.filePath, fixedContent);
                 content = fixedContent;
@@ -180,7 +180,7 @@ program
           } else if (opts.fixDryRun) {
             const fixer = FIXERS[artifact.artifactType];
             if (fixer) {
-              const fixedContent = fixer.fix(artifact.filePath, content, config);
+              const fixedContent = await fixer.fix(artifact.filePath, content, config);
               if (fixedContent !== content) {
                 const diff = simpleDiff(content, fixedContent, artifact.filePath);
                 process.stdout.write(diff + "\n");

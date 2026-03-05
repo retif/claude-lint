@@ -1,6 +1,7 @@
 import { parse as parseYaml, stringify as stringifyYaml } from "yaml";
 import type { Fixer, LinterConfig } from "../types.js";
 import { toKebabCase, isKebabCase } from "../utils/kebab-case.js";
+import { formatMarkdown } from "../utils/prettier.js";
 
 /**
  * Pre-parse fixer: fix common YAML syntax errors in raw frontmatter lines
@@ -41,7 +42,7 @@ function preParseFixFrontmatter(fmLines: string[]): string[] {
 export const frontmatterFixer: Fixer = {
   artifactType: "skill-md",
 
-  fix(_filePath: string, content: string, _config: LinterConfig): string {
+  async fix(_filePath: string, content: string, _config: LinterConfig): Promise<string> {
     let result = content;
 
     // Fix trailing whitespace on each line
@@ -88,6 +89,9 @@ export const frontmatterFixer: Fixer = {
     // Re-serialize frontmatter
     const newFm = stringifyYaml(data, { lineWidth: 0, defaultStringType: "PLAIN" }).trimEnd();
 
-    return `---\n${newFm}\n---\n${body}`;
+    // Format the body with prettier markdown
+    const formattedBody = body.trim() ? await formatMarkdown(body) : body;
+
+    return `---\n${newFm}\n---\n${formattedBody}`;
   },
 };

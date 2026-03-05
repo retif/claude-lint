@@ -1,16 +1,14 @@
 import type { Fixer, LinterConfig } from "../types.js";
+import { formatMarkdown } from "../utils/prettier.js";
 
 export const claudeMdFixer: Fixer = {
   artifactType: "claude-md",
 
-  fix(_filePath: string, content: string, _config: LinterConfig): string {
+  async fix(_filePath: string, content: string, _config: LinterConfig): Promise<string> {
     if (content === "") return content;
 
-    // Strip trailing whitespace from all lines
-    let result = content.replace(/[ \t]+$/gm, "");
-
-    // Ensure file ends with exactly one newline
-    result = result.replace(/\n*$/, "\n");
+    // Run prettier markdown formatting
+    let result = await formatMarkdown(content);
 
     // Ensure blank line before headings unless it's the first line
     const lines = result.split("\n");

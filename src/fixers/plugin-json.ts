@@ -1,4 +1,5 @@
 import type { Fixer, LinterConfig } from "../types.js";
+import { formatJson } from "../utils/prettier.js";
 
 const CANONICAL_KEY_ORDER = [
   "name", "version", "description", "author",
@@ -8,7 +9,7 @@ const CANONICAL_KEY_ORDER = [
 export const pluginJsonFixer: Fixer = {
   artifactType: "plugin-json",
 
-  fix(_filePath: string, content: string, _config: LinterConfig): string {
+  async fix(_filePath: string, content: string, _config: LinterConfig): Promise<string> {
     let parsed: Record<string, unknown>;
     try {
       parsed = JSON.parse(content);
@@ -33,6 +34,6 @@ export const pluginJsonFixer: Fixer = {
       }
     }
 
-    return JSON.stringify(ordered, null, "\t") + "\n";
+    return formatJson(JSON.stringify(ordered), true);
   },
 };

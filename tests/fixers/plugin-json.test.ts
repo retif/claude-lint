@@ -8,9 +8,9 @@ function fix(content: string) {
 }
 
 describe("plugin-json fixer", () => {
-  it("sorts keys in canonical order", () => {
+  it("sorts keys in canonical order", async () => {
     const input = JSON.stringify({ keywords: [], name: "test", version: "1.0.0", description: "A test" });
-    const result = JSON.parse(fix(input));
+    const result = JSON.parse(await fix(input));
     const keys = Object.keys(result);
     expect(keys[0]).toBe("name");
     expect(keys[1]).toBe("version");
@@ -18,26 +18,26 @@ describe("plugin-json fixer", () => {
     expect(keys[3]).toBe("keywords");
   });
 
-  it("uses tab indentation", () => {
-    const input = JSON.stringify({ name: "test" });
-    const result = fix(input);
+  it("uses tab indentation", async () => {
+    const input = JSON.stringify({ name: "test", version: "1.0.0", description: "A test plugin" });
+    const result = await fix(input);
     expect(result).toContain("\t");
   });
 
-  it("adds trailing newline", () => {
+  it("adds trailing newline", async () => {
     const input = JSON.stringify({ name: "test" });
-    const result = fix(input);
+    const result = await fix(input);
     expect(result.endsWith("\n")).toBe(true);
   });
 
-  it("returns invalid JSON unchanged", () => {
+  it("returns invalid JSON unchanged", async () => {
     const input = "{bad json";
-    expect(fix(input)).toBe(input);
+    expect(await fix(input)).toBe(input);
   });
 
-  it("puts unknown keys after canonical keys alphabetically", () => {
+  it("puts unknown keys after canonical keys alphabetically", async () => {
     const input = JSON.stringify({ zebra: 1, name: "test", alpha: 2 });
-    const result = JSON.parse(fix(input));
+    const result = JSON.parse(await fix(input));
     const keys = Object.keys(result);
     expect(keys[0]).toBe("name");
     expect(keys[1]).toBe("alpha");

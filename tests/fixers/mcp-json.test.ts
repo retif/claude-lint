@@ -8,25 +8,25 @@ function fix(content: string) {
 }
 
 describe("mcp-json fixer", () => {
-  it("sorts server names alphabetically", () => {
+  it("sorts server names alphabetically", async () => {
     const input = JSON.stringify({
       mcpServers: {
         "z-server": { command: "z" },
         "a-server": { command: "a" },
       },
     });
-    const result = JSON.parse(fix(input));
+    const result = JSON.parse(await fix(input));
     const keys = Object.keys(result.mcpServers);
     expect(keys).toEqual(["a-server", "z-server"]);
   });
 
-  it("sorts server fields in canonical order", () => {
+  it("sorts server fields in canonical order", async () => {
     const input = JSON.stringify({
       mcpServers: {
         test: { args: ["--port"], env: { FOO: "bar" }, command: "cmd", type: "stdio" },
       },
     });
-    const result = JSON.parse(fix(input));
+    const result = JSON.parse(await fix(input));
     const keys = Object.keys(result.mcpServers.test);
     expect(keys[0]).toBe("type");
     expect(keys[1]).toBe("command");
@@ -34,12 +34,12 @@ describe("mcp-json fixer", () => {
     expect(keys[3]).toBe("env");
   });
 
-  it("adds trailing newline", () => {
+  it("adds trailing newline", async () => {
     const input = JSON.stringify({ mcpServers: {} });
-    expect(fix(input).endsWith("\n")).toBe(true);
+    expect((await fix(input)).endsWith("\n")).toBe(true);
   });
 
-  it("returns invalid JSON unchanged", () => {
-    expect(fix("not json")).toBe("not json");
+  it("returns invalid JSON unchanged", async () => {
+    expect(await fix("not json")).toBe("not json");
   });
 });

@@ -1,4 +1,5 @@
 import type { Fixer, LinterConfig } from "../types.js";
+import { formatJson } from "../utils/prettier.js";
 
 const TOP_LEVEL_KEY_ORDER = [
   "permissions",
@@ -10,7 +11,7 @@ const TOP_LEVEL_KEY_ORDER = [
 export const settingsJsonFixer: Fixer = {
   artifactType: "settings-json",
 
-  fix(_filePath: string, content: string, _config: LinterConfig): string {
+  async fix(_filePath: string, content: string, _config: LinterConfig): Promise<string> {
     let parsed: Record<string, unknown>;
     try {
       parsed = JSON.parse(content);
@@ -47,6 +48,6 @@ export const settingsJsonFixer: Fixer = {
       }
     }
 
-    return JSON.stringify(ordered, null, 2) + "\n";
+    return formatJson(JSON.stringify(ordered));
   },
 };

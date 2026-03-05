@@ -1,11 +1,12 @@
 import type { Fixer, LinterConfig } from "../types.js";
+import { formatJson } from "../utils/prettier.js";
 
 const SERVER_FIELD_ORDER = ["type", "command", "url", "args", "env"];
 
 export const mcpJsonFixer: Fixer = {
   artifactType: "mcp-json",
 
-  fix(_filePath: string, content: string, _config: LinterConfig): string {
+  async fix(_filePath: string, content: string, _config: LinterConfig): Promise<string> {
     let parsed: Record<string, unknown>;
     try {
       parsed = JSON.parse(content);
@@ -48,6 +49,6 @@ export const mcpJsonFixer: Fixer = {
       result["mcpServers"] = sortedServers;
     }
 
-    return JSON.stringify(result, null, 2) + "\n";
+    return formatJson(JSON.stringify(result));
   },
 };

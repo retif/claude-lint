@@ -42,7 +42,7 @@ export interface Linter {
 
 export interface Fixer {
   artifactType: ArtifactType;
-  fix(filePath: string, content: string, config: LinterConfig): string;
+  fix(filePath: string, content: string, config: LinterConfig): Promise<string>;
 }
 
 export type ConfigScope = "user" | "project" | "subdirectory";
