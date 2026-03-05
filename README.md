@@ -47,6 +47,39 @@ claude-lint --enable skill-md/word-count --disable claude-md/no-todos path/to/pl
 claude-lint --list-rules
 ```
 
+### Example Output
+
+```
+$ claude-lint my-plugin/
+
+my-plugin/skills/example/SKILL.md
+  warn   Body has 117 words (recommended: 500-5000)  skill-md/body-word-count:5
+
+my-plugin/.claude/settings.json
+  error  "settings.json" should only exist at user level (~/.claude/).
+         Use "settings.local.json" for project-level settings  settings-json/scope-file-name
+  warn   "env" is a user-level field — it has no effect in
+         project-level settings.local.json  settings-json/scope-field:9:3
+
+1 error, 2 warnings
+```
+
+```
+$ claude-lint --fix-dry-run my-plugin/
+
+--- my-plugin/skills/deploy/SKILL.md
++++ my-plugin/skills/deploy/SKILL.md (fixed)
+-name: My Deploy Skill
++name: my-deploy-skill
+-description: Use when the user asks to "deploy": handles both cases.
++description: "Use when the user asks to \"deploy\": handles both cases."
+```
+
+```
+$ claude-lint my-plugin/
+No issues found.
+```
+
 ## Artifact Types
 
 | Type | Files | Rules |
