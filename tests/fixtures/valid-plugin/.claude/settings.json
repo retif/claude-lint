@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Write",
+      "Bash(npm test:*)"
+    ]
+  },
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "enabledPlugins": {
+    "nix-craft@oleks-plugins": true,
+    "ship-it@oleks-plugins": false
+  }
+}
