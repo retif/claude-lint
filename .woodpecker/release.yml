@@ -113,10 +113,10 @@ steps:
         GITEA_HOST=$(echo "$CI_REPO_CLONE_URL" | sed 's|https://||;s|/.*||')
         NPM_REGISTRY="https://$GITEA_HOST/api/packages/$CI_REPO_OWNER/npm"
 
-        # Publish to Gitea npm registry
+        # Publish to Gitea npm registry (--ignore-scripts: build already ran)
         echo "Publishing to $NPM_REGISTRY..."
-        npm config set "//$GITEA_HOST/api/packages/$CI_REPO_OWNER/npm/:_authToken" "$GITEA_TOKEN"
-        npm publish --registry "$NPM_REGISTRY"
+        echo "//$GITEA_HOST/api/packages/$CI_REPO_OWNER/npm/:_authToken=$GITEA_TOKEN" > "$HOME/.npmrc"
+        npm publish --registry "$NPM_REGISTRY" --ignore-scripts
 
         # Create npm tarball for release attachment
         npm pack
