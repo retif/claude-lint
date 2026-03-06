@@ -1,5 +1,9 @@
 # claudecode-linter
 
+[![CI](https://github.com/retif/claudecode-linter/actions/workflows/ci.yml/badge.svg)](https://github.com/retif/claudecode-linter/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/claudecode-linter)](https://www.npmjs.com/package/claudecode-linter)
+[![license](https://img.shields.io/npm/l/claudecode-linter)](https://github.com/retif/claudecode-linter/blob/main/LICENSE)
+
 Standalone linter for [Claude Code](https://docs.anthropic.com/en/docs/claude-code) plugin artifacts.
 
 Validates `plugin.json`, `SKILL.md`, agent/command markdown, `hooks.json`, `mcp.json`, `settings.json`, and `CLAUDE.md` files with 88 rules across 8 artifact types.
