@@ -14,6 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.RELEASE_PAT }}
 
       - uses: actions/setup-node@v4
         with:
@@ -88,7 +90,6 @@ jobs:
           VERSION="${{ steps.check.outputs.latest }}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin "https://x-access-token:${{ secrets.RELEASE_PAT }}@github.com/${{ github.repository }}.git"
           git add -A
           git commit -m "release: sync with Claude Code v$VERSION"
           git tag -a "v$VERSION" -m "v$VERSION"
