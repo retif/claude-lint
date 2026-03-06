@@ -91,7 +91,11 @@ Version tracks Claude Code: `2.1.69` = synced with Claude Code v2.1.69.
 Linter-only bugfixes use pre-release: `2.1.69-patch.1`, `2.1.69-patch.2`, etc.
 Next Claude Code release (e.g., `2.1.70`) supersedes all patches.
 
-CI pipeline (`.woodpecker/release.yml`) automates: extract → generate → build → test → bump → changelog → tag → publish → release.
+CI pipelines automate releases:
+
+- **Full release** (`.github/workflows/release.yml`): Cron every 6h + manual. Checks npm for new Claude Code version → extract → generate → build → test → bump → changelog → tag → publish to npmjs → GitHub Release.
+- **Patch release** (`.github/workflows/patch-release.yml`): Manual `workflow_dispatch` with reason. Auto-increments `-patch.N` suffix from existing tags → build → test → bump → tag → publish to npmjs (`--tag patch`) → GitHub prerelease.
+- **Gitea release** (`.woodpecker/release.yml`): Manual trigger. Same full-release flow but publishes to Gitea npm registry and creates Gitea release.
 
 ## Conventions
 

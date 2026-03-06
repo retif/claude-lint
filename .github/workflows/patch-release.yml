@@ -1,0 +1,100 @@
+name: Patch Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Reason for the patch release"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  patch-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Determine patch version
+        id: version
+        run: |
+          BASE=$(node -e "console.log(require('./package.json').version.replace(/-patch\.\d+$/, ''))")
+          echo "base=$BASE" >> "$GITHUB_OUTPUT"
+
+          # Find highest existing patch number for this base version
+          LAST=$(git tag --list "v${BASE}-patch.*" --sort=-v:refname | head -1 | grep -oP 'patch\.\K\d+' || echo 0)
+          NEXT=$((LAST + 1))
+          PATCH_VERSION="${BASE}-patch.${NEXT}"
+          echo "version=$PATCH_VERSION" >> "$GITHUB_OUTPUT"
+          echo "Patch version: $PATCH_VERSION"
+
+      - name: Build and test
+        run: |
+          npm run build
+          npm test
+
+      - name: Prepare release
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+
+          node -e "
+            const fs = require('fs');
+            const p = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            p.version = process.argv[1];
+            fs.writeFileSync('package.json', JSON.stringify(p, null, '\t') + '\n');
+          " "$VERSION"
+          npm install --package-lock-only
+
+          npm pack --ignore-scripts
+          echo "tarball=$(ls *.tgz)" >> "$GITHUB_ENV"
+
+      - name: Commit, tag, and push
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json
+          git commit -m "release: v$VERSION"
+          git tag -a "v$VERSION" -m "v$VERSION"
+          git push origin HEAD --tags
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          BASE="${{ steps.version.outputs.base }}"
+          REASON="${{ github.event.inputs.reason }}"
+
+          BODY="### Patch release for v${BASE}
+
+          ${REASON}
+
+          ### Install
+
+          \`\`\`bash
+          npm install claudecode-linter@${VERSION}
+          \`\`\`"
+
+          gh release create "v$VERSION" \
+            --title "v$VERSION" \
+            --notes "$BODY" \
+            --prerelease \
+            "${{ env.tarball }}"
+
+      - name: Publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          echo "//registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN" > ~/.npmrc
+          npm publish --ignore-scripts --access public --tag patch
