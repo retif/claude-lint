@@ -115,9 +115,8 @@ steps:
 
         # Publish to Gitea npm registry
         echo "Publishing to $NPM_REGISTRY..."
-        echo "//$GITEA_HOST/api/packages/$CI_REPO_OWNER/npm/:_authToken=$GITEA_TOKEN" > /tmp/.npmrc-publish
-        npm publish --registry "$NPM_REGISTRY" --userconfig /tmp/.npmrc-publish
-        rm -f /tmp/.npmrc-publish
+        npm config set "//$GITEA_HOST/api/packages/$CI_REPO_OWNER/npm/:_authToken" "$GITEA_TOKEN"
+        npm publish --registry "$NPM_REGISTRY"
 
         # Create npm tarball for release attachment
         npm pack
