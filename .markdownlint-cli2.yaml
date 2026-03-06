@@ -2,3 +2,5 @@ config:
   line-length: false
   fenced-code-language: false
   table-column-style: false
+  no-duplicate-heading:
+    siblings_only: true
