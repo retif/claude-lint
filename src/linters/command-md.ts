@@ -1,4 +1,4 @@
-import { TOOLS } from "../contracts.js";
+import { COMMAND_FRONTMATTER, TOOLS } from "../contracts.js";
 import type { Linter, LintDiagnostic, LinterConfig, Severity } from "../types.js";
 import { isRuleEnabled, getRuleSeverity } from "../types.js";
 import { parseFrontmatter } from "../utils/frontmatter.js";
@@ -10,6 +10,7 @@ const RULES: RuleDef[] = [
   { id: "command-md/description-required", defaultSeverity: "error" },
   { id: "command-md/allowed-tools-valid", defaultSeverity: "warning" },
   { id: "command-md/body-present", defaultSeverity: "warning" },
+  { id: "command-md/no-unknown-frontmatter", defaultSeverity: "info" },
 ];
 
 function diag(
@@ -63,6 +64,15 @@ export const commandMdLinter: Linter = {
               `Unknown tool "${t}" in allowed-tools`));
           }
         }
+      }
+    }
+
+    // unknown frontmatter fields
+    const knownFields = new Set([...COMMAND_FRONTMATTER, "allowed-tools", "argument-hint"]);
+    for (const key of Object.keys(fm.data)) {
+      if (!knownFields.has(key)) {
+        push(diag(config, filePath, "command-md/no-unknown-frontmatter", "info",
+          `Unknown frontmatter field "${key}"`));
       }
     }
 

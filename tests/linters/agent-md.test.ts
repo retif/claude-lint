@@ -58,4 +58,19 @@ describe("agent-md linter", () => {
     const diags = agentMdLinter.lint("test.md", content, CONFIG);
     expect(diags.some((d) => d.rule === "agent-md/color-valid")).toBe(true);
   });
+
+  it("reports unknown frontmatter fields", () => {
+    const content = "---\nname: test-agent\ndescription: |\n  <example>\n  user: test\n  </example>\nmodel: sonnet\ncolor: blue\ncustom-field: hello\nanother: world\n---\n\nYou are a test agent.";
+    const diags = agentMdLinter.lint("test.md", content, CONFIG);
+    const unknowns = diags.filter((d) => d.rule === "agent-md/no-unknown-frontmatter");
+    expect(unknowns).toHaveLength(2);
+    expect(unknowns[0].message).toContain("custom-field");
+    expect(unknowns[1].message).toContain("another");
+  });
+
+  it("does not report known frontmatter fields as unknown", () => {
+    const content = "---\nname: test-agent\ndescription: |\n  <example>\n  user: test\n  </example>\nmodel: sonnet\ncolor: blue\n---\n\nYou are a test agent.";
+    const diags = agentMdLinter.lint("test.md", content, CONFIG);
+    expect(diags.filter((d) => d.rule === "agent-md/no-unknown-frontmatter")).toHaveLength(0);
+  });
 });

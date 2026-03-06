@@ -1,4 +1,4 @@
-import { HOOK_EVENTS, PROMPT_EVENTS } from "../contracts.js";
+import { HOOK_EVENTS, HOOK_TYPES, PROMPT_EVENTS } from "../contracts.js";
 import type { Linter, LintDiagnostic, LinterConfig, Severity } from "../types.js";
 import { isRuleEnabled, getRuleSeverity } from "../types.js";
 
@@ -102,9 +102,10 @@ export const hooksJsonLinter: Linter = {
           const h = hook as Record<string, unknown>;
 
           // type required
-          if (!("type" in h) || (h.type !== "command" && h.type !== "prompt")) {
+          if (!("type" in h) || typeof h.type !== "string" || !HOOK_TYPES.has(h.type)) {
+            const valid = [...HOOK_TYPES].join(", ");
             push(diag(config, filePath, "hooks-json/hook-type-required", "error",
-              `Hook in ${eventName} must have "type" set to "command" or "prompt"`, ep?.line, ep?.column));
+              `Hook in ${eventName} must have "type" set to one of: ${valid}`, ep?.line, ep?.column));
             continue;
           }
 

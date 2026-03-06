@@ -1,4 +1,4 @@
-import { AGENT_MODELS, AGENT_COLORS } from "../contracts.js";
+import { AGENT_FRONTMATTER, AGENT_MODELS, AGENT_COLORS } from "../contracts.js";
 import type { Linter, LintDiagnostic, LinterConfig, Severity } from "../types.js";
 import { isRuleEnabled, getRuleSeverity } from "../types.js";
 import { parseFrontmatter } from "../utils/frontmatter.js";
@@ -18,6 +18,7 @@ const RULES: RuleDef[] = [
   { id: "agent-md/system-prompt-present", defaultSeverity: "error" },
   { id: "agent-md/system-prompt-length", defaultSeverity: "warning" },
   { id: "agent-md/system-prompt-second-person", defaultSeverity: "info" },
+  { id: "agent-md/no-unknown-frontmatter", defaultSeverity: "info" },
 ];
 
 function diag(
@@ -94,6 +95,15 @@ export const agentMdLinter: Linter = {
     } else if (!AGENT_COLORS.has(fm.data.color)) {
       push(diag(config, filePath, "agent-md/color-valid", "warning",
         `"color" must be one of: ${[...AGENT_COLORS].join(", ")} (got "${fm.data.color}")`));
+    }
+
+    // unknown frontmatter fields
+    const knownFields = new Set([...AGENT_FRONTMATTER, "name", "color"]);
+    for (const key of Object.keys(fm.data)) {
+      if (!knownFields.has(key)) {
+        push(diag(config, filePath, "agent-md/no-unknown-frontmatter", "info",
+          `Unknown frontmatter field "${key}"`));
+      }
     }
 
     // system prompt (body)

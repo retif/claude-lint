@@ -79,4 +79,18 @@ describe("hooks-json linter", () => {
     const diags = hooksJsonLinter.lint("test.json", content, CONFIG);
     expect(diags.some((d) => d.rule === "hooks-json/prompt-has-prompt")).toBe(true);
   });
+
+  it("reports invalid hook type", () => {
+    const content = JSON.stringify({
+      hooks: {
+        PreToolUse: [{
+          matcher: "Write",
+          hooks: [{ type: "invalid-type", command: "echo hi" }],
+        }],
+      },
+    });
+    const diags = hooksJsonLinter.lint("test.json", content, CONFIG);
+    expect(diags.some((d) => d.rule === "hooks-json/hook-type-required")).toBe(true);
+    expect(diags[0].message).toContain("command");
+  });
 });
