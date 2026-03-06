@@ -89,7 +89,7 @@ jobs:
           gh release create "v$VERSION" \
             --title "v$VERSION" \
             --notes "$BODY" \
-            --prerelease \
+            --latest \
             "${{ env.tarball }}"
 
       - name: Publish to npm
