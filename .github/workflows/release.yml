@@ -117,3 +117,11 @@ jobs:
             "${{ env.tarball }}"
 
           rm -f CHANGELOG_ENTRY.md *.tgz
+
+      - name: Publish to npm
+        if: steps.check.outputs.skip == 'false'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          echo "//registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN" > ~/.npmrc
+          npm publish --ignore-scripts --access public
