@@ -101,14 +101,44 @@ steps:
         echo "==> Pushing v$VERSION..."
         git push "$PUSH_URL" HEAD:$CI_COMMIT_BRANCH --tags
 
-        # Publish to Gitea npm registry (--ignore-scripts: build already ran)
+        # Pack and publish to Gitea npm registry (curl — npm cli auth broken in CI containers)
         echo "==> Publishing to $NPM_REGISTRY..."
-        echo "//$GITEA_HOST/api/packages/$CI_REPO_OWNER/npm/:_authToken=$GITEA_TOKEN" > "$HOME/.npmrc"
-        npm publish --registry "$NPM_REGISTRY" --ignore-scripts
-
-        # Create npm tarball for release attachment
-        npm pack
+        npm pack --ignore-scripts
         TARBALL=$(ls *.tgz)
+        PKG_NAME=$(node -e "console.log(require('./package.json').name)")
+        node -e "
+          const fs = require('fs');
+          const crypto = require('crypto');
+          const pkg = require('./package.json');
+          const tarball = fs.readFileSync(process.argv[1]);
+          const shasum = crypto.createHash('sha1').update(tarball).digest('hex');
+          const integrity = 'sha512-' + crypto.createHash('sha512').update(tarball).digest('base64');
+          const body = {
+            _id: pkg.name,
+            name: pkg.name,
+            'dist-tags': { latest: pkg.version },
+            versions: {
+              [pkg.version]: {
+                ...pkg,
+                _id: pkg.name + '@' + pkg.version,
+                dist: { shasum, integrity, tarball: process.argv[2] + '/' + pkg.name + '/-/' + process.argv[1] }
+              }
+            },
+            _attachments: {
+              [process.argv[1]]: {
+                content_type: 'application/octet-stream',
+                data: tarball.toString('base64'),
+                length: tarball.length
+              }
+            }
+          };
+          process.stdout.write(JSON.stringify(body));
+        " "$TARBALL" "$NPM_REGISTRY" | curl -sf -X PUT \
+          -H "Authorization: token $GITEA_TOKEN" \
+          -H "Content-Type: application/json" \
+          --data-binary @- \
+          "$NPM_REGISTRY/$PKG_NAME"
+        echo "Published $TARBALL to $NPM_REGISTRY"
 
         # Build release body with install instructions
         RELEASE_BODY=$(node -e "
