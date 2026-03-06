@@ -1,11 +1,5 @@
 # Changelog
 
-## 2.1.70 (2026-03-06)
-
-Synced with Claude Code v2.1.70.
-
-No contract changes from v2.1.69.
-
 ## 2.1.69 (2026-03-06)
 
 Synced with Claude Code v2.1.69.
