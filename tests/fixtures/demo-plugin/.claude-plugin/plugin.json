@@ -1,0 +1,5 @@
+{
+	"name": "My Deploy Plugin",
+	"description": "Deploys stuff",
+	"version": "1.0"
+}

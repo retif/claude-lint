@@ -114,7 +114,10 @@ program
 	.description("Linter for Claude Code plugin artifacts")
 	.version(
 		JSON.parse(
-			readFileSync(join(dirname(fileURLToPath(import.meta.url)), "..", "package.json"), "utf8"),
+			readFileSync(
+				join(dirname(fileURLToPath(import.meta.url)), "..", "package.json"),
+				"utf8",
+			),
 		).version,
 	)
 	.argument("[paths...]", "Plugin directories or individual files", ["."])

@@ -4,3 +4,5 @@ config:
   table-column-style: false
   no-duplicate-heading:
     siblings_only: true
+ignores:
+  - tests/fixtures/demo-plugin/**
