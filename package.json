@@ -20,7 +20,7 @@
 		"generate-contracts": "tsx scripts/generate-contracts.ts"
 	},
 	"files": [
-		"dist/",
+		"dist/**/*.js",
 		".claudecode-lint.defaults.yaml",
 		"README.md"
 	],
