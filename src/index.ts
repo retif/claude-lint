@@ -207,7 +207,9 @@ program
 				});
 
 				if (artifacts.length === 0) {
-					process.stderr.write(pc.yellow(`No plugin artifacts found in ${targetPath}\n`));
+					process.stderr.write(
+						pc.yellow(`No plugin artifacts found in ${targetPath}\n`),
+					);
 					continue;
 				}
 
