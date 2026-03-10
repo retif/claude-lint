@@ -13,12 +13,16 @@
 
 import { execSync } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as acorn from "acorn";
-import * as walk from "acorn-walk";
+import type * as AcornWalk from "acorn-walk";
 import pc from "picocolors";
+
+const require = createRequire(import.meta.url);
+const walk = require("acorn-walk") as typeof AcornWalk;
 
 // ---------------------------------------------------------------------------
 // 1. Download and extract cli.js
