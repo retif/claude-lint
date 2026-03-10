@@ -1,0 +1,2 @@
+CI trigger file
+Triggered by GitHub Copilot Chat Assistant on 2026-03-10 to re-run PR checks for https://github.com/retif/claudecode-linter/pull/4
