@@ -16,7 +16,7 @@ const data = JSON.parse(readFileSync(inputPath, "utf8"));
 const c = data.contracts;
 
 function setLiteral(name: string, values: string[] | undefined): string {
-	const items = (values ?? []).map((v) => `  ${JSON.stringify(v)},`).join("\n");
+	const items = (values ?? []).map((v) => `\t${JSON.stringify(v)},`).join("\n");
 	return `export const ${name} = new Set<string>([\n${items}\n]);`;
 }
 

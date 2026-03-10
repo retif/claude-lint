@@ -1,5 +1,5 @@
 // Auto-generated from contracts/claude-code-contracts.json
-// Claude Code v2.1.72 — extracted 2026-03-10T21:58:04.590Z
+// Claude Code v2.1.72 — extracted 2026-03-10T22:00:41.977Z
 // Do not edit manually. Run: npm run generate-contracts
 
 export const TOOLS = new Set<string>([
@@ -217,4 +217,6 @@ export const SETTINGS_USER_FIELDS = new Set<string>([
 	"worktree",
 ]);
 
-export const SETTINGS_PROJECT_FIELDS = new Set<string>(["permissions"]);
+export const SETTINGS_PROJECT_FIELDS = new Set<string>([
+	"permissions",
+]);

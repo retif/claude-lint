@@ -1,6 +1,6 @@
 {
 	"version": "2.1.72",
-	"extractedAt": "2026-03-10T21:58:04.590Z",
+	"extractedAt": "2026-03-10T22:00:41.977Z",
 	"contracts": {
 		"tools": [
 			"Agent",
@@ -55,7 +55,12 @@
 			"WorktreeCreate",
 			"WorktreeRemove"
 		],
-		"hookTypes": ["agent", "command", "http", "prompt"],
+		"hookTypes": [
+			"agent",
+			"command",
+			"http",
+			"prompt"
+		],
 		"promptEvents": [
 			"Notification",
 			"PostToolUse",
@@ -77,7 +82,12 @@
 			"red",
 			"yellow"
 		],
-		"agentModels": ["haiku", "inherit", "opus", "sonnet"],
+		"agentModels": [
+			"haiku",
+			"inherit",
+			"opus",
+			"sonnet"
+		],
 		"pluginJsonFields": [
 			"name",
 			"version",
@@ -195,6 +205,8 @@
 			"voiceEnabled",
 			"worktree"
 		],
-		"settingsProjectFields": ["permissions"]
+		"settingsProjectFields": [
+			"permissions"
+		]
 	}
 }

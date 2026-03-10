@@ -585,7 +585,7 @@ function main() {
 	printDrift(entries);
 
 	// Write new contracts
-	writeFileSync(outPath, JSON.stringify(output, null, 2) + "\n");
+	writeFileSync(outPath, JSON.stringify(output, null, "\t") + "\n");
 
 	// Write changelog entry if --changelog flag is passed
 	if (process.argv.includes("--changelog")) {
