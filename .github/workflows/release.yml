@@ -27,17 +27,16 @@ jobs:
       - name: Check for new version
         id: check
         run: |
-          CURRENT=$(node -e "const d = require('./contracts/claude-code-contracts.json'); console.log(d.version)")
           LATEST=$(npm view @anthropic-ai/claude-code version)
-          echo "current=$CURRENT" >> "$GITHUB_OUTPUT"
           echo "latest=$LATEST" >> "$GITHUB_OUTPUT"
-          echo "Current: $CURRENT"
-          echo "Latest:  $LATEST"
-          if [ "$CURRENT" = "$LATEST" ]; then
+          echo "Latest npm: $LATEST"
+          # Check if we already have a git tag for this version
+          if git rev-parse "v$LATEST" >/dev/null 2>&1; then
             echo "skip=true" >> "$GITHUB_OUTPUT"
-            echo "Already up to date — nothing to do."
+            echo "Tag v$LATEST already exists — nothing to do."
           else
             echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "No tag v$LATEST — will create release."
           fi
 
       - name: Extract contracts
