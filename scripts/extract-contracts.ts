@@ -22,7 +22,7 @@ import type * as AcornWalk from "acorn-walk";
 import pc from "picocolors";
 
 const require = createRequire(import.meta.url);
-const walk = require("acorn-walk") as typeof AcornWalk;
+const walk = require("acorn-walk") as AcornWalk;
 
 // ---------------------------------------------------------------------------
 // 1. Download and extract cli.js
