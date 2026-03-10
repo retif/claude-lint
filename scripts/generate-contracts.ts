@@ -15,8 +15,8 @@ const outputPath = join(rootDir, "src", "contracts.ts");
 const data = JSON.parse(readFileSync(inputPath, "utf8"));
 const c = data.contracts;
 
-function setLiteral(name: string, values: string[]): string {
-  const items = values.map((v) => `  ${JSON.stringify(v)},`).join("\n");
+function setLiteral(name: string, values: string[] | undefined): string {
+  const items = (values ?? []).map((v) => `  ${JSON.stringify(v)},`).join("\n");
   return `export const ${name} = new Set([\n${items}\n]);`;
 }
 
