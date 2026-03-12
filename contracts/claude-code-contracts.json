@@ -1,6 +1,6 @@
 {
-	"version": "2.1.73",
-	"extractedAt": "2026-03-11T18:26:22.169Z",
+	"version": "2.1.74",
+	"extractedAt": "2026-03-12T00:36:39.369Z",
 	"contracts": {
 		"tools": [
 			"Agent",
