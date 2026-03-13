@@ -103,6 +103,41 @@ function collectStringSets(ast: acorn.Program): StringSet[] {
 }
 
 // ---------------------------------------------------------------------------
+// 2b. Object key census
+// ---------------------------------------------------------------------------
+
+export type ObjectKeySet = { keys: string[]; pos: number };
+
+export function collectObjectKeySets(ast: acorn.Program): ObjectKeySet[] {
+	const results: ObjectKeySet[] = [];
+	const seen = new Set<string>();
+
+	walk.simple(ast, {
+		ObjectExpression(node: any) {
+			const keys: string[] = [];
+			for (const prop of node.properties) {
+				if (prop.type === "SpreadElement") continue;
+				if (prop.computed) continue;
+				if (prop.key.type === "Identifier") {
+					keys.push(prop.key.name);
+				} else if (prop.key.type === "Literal" && typeof prop.key.value === "string") {
+					keys.push(prop.key.value);
+				}
+			}
+			if (keys.length < 3 || keys.length > 150) return;
+
+			const signature = [...keys].sort().join(",");
+			if (seen.has(signature)) return;
+			seen.add(signature);
+
+			results.push({ keys, pos: node.start });
+		},
+	});
+
+	return results;
+}
+
+// ---------------------------------------------------------------------------
 // 3. Classification heuristics
 // ---------------------------------------------------------------------------
 
