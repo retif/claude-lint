@@ -553,6 +553,14 @@ function extractSettingsFields(source: string): {
 	};
 }
 
+function extractSettingsProjectFields(source: string): string[] {
+	const fields = extractZodObjectKeys(
+		source,
+		'.describe("List of tools the project is allowed to use")',
+	);
+	return fields.length > 0 ? fields : ["permissions"];
+}
+
 function extractSkillFrontmatter(source: string): string[] {
 	// Skill frontmatter fields are accessed via property access patterns like:
 	// H.name, H.description, H.version, H.model, H.when_to_use
@@ -616,7 +624,7 @@ function main() {
 
 	const label = requestedVersion ? `v${requestedVersion}` : "latest";
 	console.log(pc.cyan(`▸ Fetching @anthropic-ai/claude-code (${label})...`));
-	const { source, version } = fetchCliSource(requestedVersion);
+	const { source, version, sdkToolsDts } = fetchCliSource(requestedVersion);
 	console.log(
 		pc.cyan("▸ Parsing AST"),
 		pc.dim(`(v${version}, ${(source.length / 1e6).toFixed(1)}MB)`),
@@ -627,29 +635,37 @@ function main() {
 		ecmaVersion: "latest",
 	}) as acorn.Program;
 
-	const sets = collectStringSets(ast);
+	const stringSets = collectStringSets(ast);
+	const objectKeySets = collectObjectKeySets(ast);
 	console.log(
 		pc.cyan("▸ Extracting contracts..."),
-		pc.dim(`(${sets.length} string sets)`),
+		pc.dim(`(${stringSets.length} string sets, ${objectKeySets.length} object-key sets)`),
 	);
 
-	const classified = classifySets(sets);
-
-	const pluginFields = extractPluginJsonFields(source);
-	const agentFields = extractAgentFrontmatterFields(source);
-	const agentModelEnum = extractAgentModelEnum(source);
-	const commandFields = extractCommandFrontmatterFields(source);
-	const mcpFields = extractMcpServerFields(source);
-	const hookTypes = extractHookTypes(source);
-	const promptEvents = extractPromptEvents(source);
-	const settingsFields = extractSettingsFields(source);
-	const skillFields = extractSkillFrontmatter(source);
+	// --- String-set classification (tools, events, colors — already robust) ---
+	const classified = classifySets(stringSets);
 	const allTools = extractAllToolNames(source);
 
+	// --- d.ts cross-validation for tools ---
+	if (sdkToolsDts) {
+		const dtsTools = parseToolsDts(sdkToolsDts);
+		const censusTools = new Set(allTools);
+		const missingFromCensus = dtsTools.filter(t => !censusTools.has(t));
+		if (missingFromCensus.length > 0) {
+			console.log(pc.yellow(`  ⚠ Tools in sdk-tools.d.ts but not in bundle: ${missingFromCensus.join(", ")}`));
+			// Add them — d.ts is authoritative for SDK tools
+			for (const t of missingFromCensus) allTools.push(t);
+			allTools.sort();
+		}
+	} else {
+		console.log(pc.yellow("  ⚠ sdk-tools.d.ts not found in package — skipping d.ts cross-validation"));
+	}
+
+	// --- Object-key census classification (replaces fragile anchor extractors) ---
 	const rootDir = join(import.meta.dirname!, "..");
 	const outPath = join(rootDir, "contracts", "claude-code-contracts.json");
 
-	// Load previous contracts to use as fallback when extraction fails
+	// Load previous contracts for census classification + merge
 	let prev: Record<string, string[]> = {};
 	try {
 		const existing = JSON.parse(readFileSync(outPath, "utf8"));
@@ -658,26 +674,33 @@ function main() {
 		// First run — no previous file
 	}
 
-	// Merge extracted values with previous: always keep previous values, add new ones.
-	// This prevents data loss when the extractor can't find values in new bundle versions.
-	const mergeWithPrevious = (
-		extracted: string[] | undefined,
-		field: string,
-	): string[] | undefined => {
-		const previous = prev[field] ?? [];
-		const current = extracted ?? [];
-		const merged = new Set([...previous, ...current]);
-		return merged.size > 0 ? [...merged] : undefined;
-	};
+	const pluginFields = classifyByOverlap(objectKeySets, prev["pluginJsonFields"] ?? []);
+	const agentFields = classifyByOverlap(objectKeySets, prev["agentFrontmatter"] ?? []);
+	const commandFields = classifyByOverlap(objectKeySets, prev["commandFrontmatter"] ?? []);
+	const mcpFields = classifyByOverlap(objectKeySets, prev["mcpServerFields"] ?? []);
+	const settingsUserFields = classifyByOverlap(objectKeySets, prev["settingsUserFields"] ?? []);
+	const skillFields = classifyByOverlap(objectKeySets, prev["skillFrontmatter"] ?? []);
 
-	const contracts = {
+	// Small enum sets: also try census via string-set classification, with anchor fallback
+	const agentModelsCensus = classifyByOverlap(objectKeySets, prev["agentModels"] ?? []);
+	const agentModelEnum = agentModelsCensus.length > 0 ? agentModelsCensus : extractAgentModelEnum(source);
+	const hookTypesCensus = classifyByOverlap(objectKeySets, prev["hookTypes"] ?? []);
+	const hookTypes = hookTypesCensus.length > 0 ? hookTypesCensus : extractHookTypes(source);
+	const promptEventsCensus = classifyByOverlap(objectKeySets, prev["promptEvents"] ?? []);
+	const promptEvents = promptEventsCensus.length > 0 ? promptEventsCensus : extractPromptEvents(source);
+
+	// settingsProjectFields: single-value category, keep anchor fallback
+	const settingsProjectFields = extractSettingsProjectFields(source);
+
+	// --- Raw extracted contracts (before merge) ---
+	const rawContracts: Record<string, string[] | undefined> = {
 		tools:
 			allTools.length > mergeArrays(classified.tools).length
 				? allTools
 				: mergeArrays(classified.tools),
 		hookEvents: longestArray(classified.hookEvents).sort(),
-		hookTypes: mergeWithPrevious(hookTypes.sort(), "hookTypes") ?? [],
-		promptEvents: mergeWithPrevious(promptEvents.sort(), "promptEvents") ?? [],
+		hookTypes: hookTypes.length > 0 ? hookTypes.sort() : undefined,
+		promptEvents: promptEvents.length > 0 ? promptEvents.sort() : undefined,
 		agentColors: (() => {
 			const colors = longestArray(classified.agentColors);
 			if (colors.includes("purple") && !colors.includes("magenta"))
@@ -686,27 +709,49 @@ function main() {
 				colors.push("purple");
 			return colors.sort();
 		})(),
-		agentModels:
-			agentModelEnum.length > 0
-				? agentModelEnum.sort()
-				: (mergeWithPrevious(undefined, "agentModels") ??
-					longestArray(classified.agentColors).sort()),
-		pluginJsonFields: mergeWithPrevious(pluginFields, "pluginJsonFields"),
-		agentFrontmatter: mergeWithPrevious(agentFields, "agentFrontmatter"),
-		commandFrontmatter: mergeWithPrevious(commandFields, "commandFrontmatter"),
-		mcpServerFields: mergeWithPrevious(mcpFields, "mcpServerFields"),
-		skillFrontmatter: mergeWithPrevious(skillFields, "skillFrontmatter"),
-		settingsUserFields: mergeWithPrevious(
-			settingsFields.user.length > 0 ? settingsFields.user.sort() : undefined,
-			"settingsUserFields",
-		),
-		settingsProjectFields: mergeWithPrevious(
-			settingsFields.project.length > 0
-				? settingsFields.project.sort()
-				: undefined,
-			"settingsProjectFields",
-		),
+		agentModels: agentModelEnum.length > 0 ? agentModelEnum.sort() : undefined,
+		pluginJsonFields: pluginFields.length > 0 ? pluginFields : undefined,
+		agentFrontmatter: agentFields.length > 0 ? agentFields : undefined,
+		commandFrontmatter: commandFields.length > 0 ? commandFields : undefined,
+		mcpServerFields: mcpFields.length > 0 ? mcpFields : undefined,
+		skillFrontmatter: skillFields.length > 0 ? skillFields : undefined,
+		settingsUserFields: settingsUserFields.length > 0 ? settingsUserFields.sort() : undefined,
+		settingsProjectFields: settingsProjectFields.length > 0 ? settingsProjectFields.sort() : undefined,
 	};
+
+	// --- CI Contract Gate (pre-merge) ---
+	const validation = validateContracts(rawContracts as Record<string, string[] | undefined>, prev);
+	if (validation.warnings.length > 0) {
+		console.log(pc.yellow("\n  Contract warnings:"));
+		for (const w of validation.warnings) console.log(pc.yellow(`    ⚠ ${w}`));
+	}
+	if (validation.failed) {
+		if (process.env.FORCE_CONTRACTS === "1") {
+			console.log(pc.yellow("\n  ⚠ FORCE_CONTRACTS=1 — bypassing contract gate"));
+			for (const e of validation.errors) console.log(pc.yellow(`    ${e}`));
+		} else {
+			console.log(pc.red("\n  ✗ Contract gate FAILED — extraction degraded >30%:"));
+			for (const e of validation.errors) console.log(pc.red(`    ${e}`));
+			console.log(pc.red("\n  Set FORCE_CONTRACTS=1 to override."));
+			process.exit(1);
+		}
+	}
+
+	// --- Merge with previous (soft merge, post-gate) ---
+	const mergeWithPrevious = (
+		extracted: string[] | undefined,
+		field: string,
+	): string[] | undefined => {
+		const previous = prev[field] ?? [];
+		const current = extracted ?? [];
+		const merged = new Set([...previous, ...current]);
+		return merged.size > 0 ? [...merged].sort() : undefined;
+	};
+
+	const contracts: Record<string, string[] | undefined> = {};
+	for (const field of FIELDS) {
+		contracts[field] = mergeWithPrevious(rawContracts[field] as string[] | undefined, field);
+	}
 
 	const output = {
 		version,
