@@ -138,6 +138,43 @@ export function collectObjectKeySets(ast: acorn.Program): ObjectKeySet[] {
 }
 
 // ---------------------------------------------------------------------------
+// 2c. Overlap-based classification
+// ---------------------------------------------------------------------------
+
+export function classifyByOverlap(
+	sets: ObjectKeySet[],
+	knownValues: string[],
+): string[] {
+	if (sets.length === 0 || knownValues.length === 0) return [];
+
+	const knownSet = new Set(knownValues);
+	const MIN_OVERLAP_FLOOR = 3;
+	const MIN_SCORE = 0.3;
+
+	let bestKeys: string[] = [];
+	let bestScore = 0;
+	let bestSizeDiff = Infinity;
+
+	for (const s of sets) {
+		const intersectionCount = s.keys.filter(k => knownSet.has(k)).length;
+		if (intersectionCount < MIN_OVERLAP_FLOOR) continue;
+
+		const score = intersectionCount / Math.max(s.keys.length, knownValues.length);
+		if (score < MIN_SCORE) continue;
+
+		const sizeDiff = Math.abs(s.keys.length - knownValues.length);
+
+		if (score > bestScore || (score === bestScore && sizeDiff < bestSizeDiff)) {
+			bestScore = score;
+			bestKeys = s.keys;
+			bestSizeDiff = sizeDiff;
+		}
+	}
+
+	return bestKeys;
+}
+
+// ---------------------------------------------------------------------------
 // 3. Classification heuristics
 // ---------------------------------------------------------------------------
 

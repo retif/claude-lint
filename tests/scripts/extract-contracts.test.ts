@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { extractTopLevelKeys, collectObjectKeySets } from "../../scripts/extract-contracts.js";
+import { extractTopLevelKeys, collectObjectKeySets, classifyByOverlap } from "../../scripts/extract-contracts.js";
 import * as acorn from "acorn";
 
 function parseCode(code: string) {
@@ -87,5 +87,56 @@ describe("collectObjectKeySets", () => {
 		const ast = parseCode("const x = { name: 1, [expr]: 2, version: 3, desc: 4 }");
 		const sets = collectObjectKeySets(ast);
 		expect(sets.some(s => s.keys.includes("name") && s.keys.includes("version"))).toBe(true);
+	});
+});
+
+describe("classifyByOverlap", () => {
+	const knownPluginFields = ["name", "version", "description", "author", "homepage", "repository", "license", "keywords"];
+
+	it("picks the set with highest overlap score", () => {
+		const sets = [
+			{ keys: ["name", "version", "description", "author", "homepage", "repository", "license", "keywords"], pos: 0 },
+			{ keys: ["name", "value", "type", "label"], pos: 100 },
+			{ keys: ["x", "y", "z", "w"], pos: 200 },
+		];
+		const result = classifyByOverlap(sets, knownPluginFields);
+		expect(result).toEqual(["name", "version", "description", "author", "homepage", "repository", "license", "keywords"]);
+	});
+
+	it("returns empty array when no set meets minimum overlap floor of 3", () => {
+		const sets = [
+			{ keys: ["name", "version", "other1", "other2", "other3"], pos: 0 },
+		];
+		const result = classifyByOverlap(sets, knownPluginFields);
+		expect(result).toEqual([]);
+	});
+
+	it("returns empty array when no set meets minimum score of 0.3", () => {
+		const sets = [
+			{ keys: ["name", "version", "description", ...Array.from({ length: 47 }, (_, i) => `other${i}`)], pos: 0 },
+		];
+		const result = classifyByOverlap(sets, knownPluginFields);
+		expect(result).toEqual([]);
+	});
+
+	it("includes new keys from winning set", () => {
+		const sets = [
+			{ keys: ["name", "version", "description", "author", "homepage", "repository", "license", "keywords", "newField"], pos: 0 },
+		];
+		const result = classifyByOverlap(sets, knownPluginFields);
+		expect(result).toContain("newField");
+	});
+
+	it("breaks ties by size proximity to known set", () => {
+		const sets = [
+			{ keys: ["name", "version", "description", "author", "extra1", "extra2", "extra3", "extra4"], pos: 0 },
+			{ keys: ["name", "version", "description", "author"], pos: 100 },
+		];
+		const result = classifyByOverlap(sets, knownPluginFields);
+		expect(result?.length).toBe(8);
+	});
+
+	it("returns empty array for empty input", () => {
+		expect(classifyByOverlap([], knownPluginFields)).toEqual([]);
 	});
 });
