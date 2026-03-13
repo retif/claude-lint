@@ -31,6 +31,7 @@ const walk = require("acorn-walk") as AcornWalk;
 function fetchCliSource(requestedVersion?: string): {
 	source: string;
 	version: string;
+	sdkToolsDts: string | null;
 } {
 	const npmPkg = requestedVersion
 		? `@anthropic-ai/claude-code@${requestedVersion}`
@@ -48,7 +49,15 @@ function fetchCliSource(requestedVersion?: string): {
 			readFileSync(join(tmp, "package", "package.json"), "utf8"),
 		);
 		const source = readFileSync(join(tmp, "package", "cli.js"), "utf8");
-		return { source, version: pkg.version };
+
+		let sdkToolsDts: string | null = null;
+		try {
+			sdkToolsDts = readFileSync(join(tmp, "package", "sdk-tools.d.ts"), "utf8");
+		} catch {
+			// File may not exist in all versions
+		}
+
+		return { source, version: pkg.version, sdkToolsDts };
 	} finally {
 		rmSync(tmp, { recursive: true, force: true });
 	}
