@@ -33,6 +33,8 @@ steps:
   # ----------------------------------------------------------------
   build:
     image: node:20
+    environment:
+      - FORCE_CONTRACTS=${CI_PIPELINE_PARAM_FORCE_CONTRACTS:-0}
     commands:
       - |
         set -e
