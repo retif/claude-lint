@@ -1,5 +1,5 @@
 // Auto-generated from contracts/claude-code-contracts.json
-// Claude Code v2.1.86 — extracted 2026-03-28T00:43:55.735Z
+// Claude Code v2.1.87 — extracted 2026-03-29T06:33:11.607Z
 // Do not edit manually. Run: npm run generate-contracts
 
 export const TOOLS = new Set<string>([
