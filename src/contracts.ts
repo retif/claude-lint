@@ -1,5 +1,5 @@
 // Auto-generated from contracts/claude-code-contracts.json
-// Claude Code v2.1.88 — extracted 2026-03-31T00:47:25.030Z
+// Claude Code v2.1.89 — extracted 2026-04-01T06:44:46.407Z
 // Do not edit manually. Run: npm run generate-contracts
 
 export const TOOLS = new Set<string>([
@@ -203,6 +203,7 @@ export const SETTINGS_USER_FIELDS = new Set<string>([
 	"alwaysThinkingEnabled",
 	"apiKeyHelper",
 	"attribution",
+	"autoCompactWindow",
 	"autoDreamEnabled",
 	"autoMemoryDirectory",
 	"autoMemoryEnabled",

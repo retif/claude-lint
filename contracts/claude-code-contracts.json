@@ -1,6 +1,6 @@
 {
-	"version": "2.1.88",
-	"extractedAt": "2026-03-31T00:47:25.030Z",
+	"version": "2.1.89",
+	"extractedAt": "2026-04-01T06:44:46.407Z",
 	"contracts": {
 		"tools": [
 			"Agent",
@@ -192,6 +192,7 @@
 			"alwaysThinkingEnabled",
 			"apiKeyHelper",
 			"attribution",
+			"autoCompactWindow",
 			"autoDreamEnabled",
 			"autoMemoryDirectory",
 			"autoMemoryEnabled",
