@@ -1,6 +1,6 @@
 {
-	"version": "2.1.90",
-	"extractedAt": "2026-04-02T00:44:59.407Z",
+	"version": "2.1.91",
+	"extractedAt": "2026-04-03T00:47:36.943Z",
 	"contracts": {
 		"tools": [
 			"Agent",
@@ -210,6 +210,7 @@
 			"deniedMcpServers",
 			"disableAllHooks",
 			"disableAutoMode",
+			"disableSkillShellExecution",
 			"disabledMcpjsonServers",
 			"effortLevel",
 			"enableAllProjectMcpServers",
