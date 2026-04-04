@@ -1,5 +1,5 @@
 // Auto-generated from contracts/claude-code-contracts.json
-// Claude Code v2.1.91 — extracted 2026-04-03T00:47:36.943Z
+// Claude Code v2.1.92 — extracted 2026-04-04T00:44:04.010Z
 // Do not edit manually. Run: npm run generate-contracts
 
 export const TOOLS = new Set<string>([
@@ -235,6 +235,7 @@ export const SETTINGS_USER_FIELDS = new Set<string>([
 	"fileSuggestion",
 	"forceLoginMethod",
 	"forceLoginOrgUUID",
+	"forceRemoteSettingsRefresh",
 	"gcpAuthRefresh",
 	"hooks",
 	"httpHookAllowedEnvVars",
@@ -251,6 +252,7 @@ export const SETTINGS_USER_FIELDS = new Set<string>([
 	"pluginConfigs",
 	"pluginTrustMessage",
 	"prefersReducedMotion",
+	"proactive",
 	"promptSuggestionEnabled",
 	"remote",
 	"respectGitignore",
@@ -269,6 +271,7 @@ export const SETTINGS_USER_FIELDS = new Set<string>([
 	"strictPluginOnlyCustomization",
 	"syntaxHighlightingDisabled",
 	"terminalTitleFromRename",
+	"voice",
 	"voiceEnabled",
 	"worktree",
 ]);

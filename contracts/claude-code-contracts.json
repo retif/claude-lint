@@ -1,6 +1,6 @@
 {
-	"version": "2.1.91",
-	"extractedAt": "2026-04-03T00:47:36.943Z",
+	"version": "2.1.92",
+	"extractedAt": "2026-04-04T00:44:04.010Z",
 	"contracts": {
 		"tools": [
 			"Agent",
@@ -224,6 +224,7 @@
 			"fileSuggestion",
 			"forceLoginMethod",
 			"forceLoginOrgUUID",
+			"forceRemoteSettingsRefresh",
 			"gcpAuthRefresh",
 			"hooks",
 			"httpHookAllowedEnvVars",
@@ -240,6 +241,7 @@
 			"pluginConfigs",
 			"pluginTrustMessage",
 			"prefersReducedMotion",
+			"proactive",
 			"promptSuggestionEnabled",
 			"remote",
 			"respectGitignore",
@@ -258,6 +260,7 @@
 			"strictPluginOnlyCustomization",
 			"syntaxHighlightingDisabled",
 			"terminalTitleFromRename",
+			"voice",
 			"voiceEnabled",
 			"worktree"
 		],
