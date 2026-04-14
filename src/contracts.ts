@@ -1,5 +1,5 @@
 // Auto-generated from contracts/claude-code-contracts.json
-// Claude Code v2.1.104 — extracted 2026-04-12T06:41:14.856Z
+// Claude Code v2.1.105 — extracted 2026-04-14T00:53:23.164Z
 // Do not edit manually. Run: npm run generate-contracts
 
 export const TOOLS = new Set<string>([
@@ -210,6 +210,7 @@ export const SETTINGS_USER_FIELDS = new Set<string>([
 	"autoMode",
 	"autoUpdatesChannel",
 	"availableModels",
+	"awaySummaryEnabled",
 	"awsAuthRefresh",
 	"awsCredentialExport",
 	"blockedMarketplaces",
@@ -259,6 +260,9 @@ export const SETTINGS_USER_FIELDS = new Set<string>([
 	"sandbox",
 	"showClearContextOnPlanAccept",
 	"showThinkingSummaries",
+	"skillListingBudgetFraction",
+	"skillListingMaxDescChars",
+	"skillOverrides",
 	"skipAutoPermissionPrompt",
 	"skipDangerousModePermissionPrompt",
 	"skipWebFetchPreflight",
@@ -269,6 +273,7 @@ export const SETTINGS_USER_FIELDS = new Set<string>([
 	"statusLine",
 	"strictKnownMarketplaces",
 	"strictPluginOnlyCustomization",
+	"subagentStatusLine",
 	"syntaxHighlightingDisabled",
 	"terminalTitleFromRename",
 	"viewMode",

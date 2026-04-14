@@ -1,6 +1,6 @@
 {
-	"version": "2.1.104",
-	"extractedAt": "2026-04-12T06:41:14.856Z",
+	"version": "2.1.105",
+	"extractedAt": "2026-04-14T00:53:23.164Z",
 	"contracts": {
 		"tools": [
 			"Agent",
@@ -199,6 +199,7 @@
 			"autoMode",
 			"autoUpdatesChannel",
 			"availableModels",
+			"awaySummaryEnabled",
 			"awsAuthRefresh",
 			"awsCredentialExport",
 			"blockedMarketplaces",
@@ -248,6 +249,9 @@
 			"sandbox",
 			"showClearContextOnPlanAccept",
 			"showThinkingSummaries",
+			"skillListingBudgetFraction",
+			"skillListingMaxDescChars",
+			"skillOverrides",
 			"skipAutoPermissionPrompt",
 			"skipDangerousModePermissionPrompt",
 			"skipWebFetchPreflight",
@@ -258,6 +262,7 @@
 			"statusLine",
 			"strictKnownMarketplaces",
 			"strictPluginOnlyCustomization",
+			"subagentStatusLine",
 			"syntaxHighlightingDisabled",
 			"terminalTitleFromRename",
 			"viewMode",
