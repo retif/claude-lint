@@ -12,7 +12,14 @@
  */
 
 import { execSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+	existsSync,
+	mkdirSync,
+	mkdtempSync,
+	readFileSync,
+	rmSync,
+	writeFileSync,
+} from "node:fs";
 import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
@@ -48,7 +55,6 @@ function fetchCliSource(requestedVersion?: string): {
 		const pkg = JSON.parse(
 			readFileSync(join(tmp, "package", "package.json"), "utf8"),
 		);
-		const source = readFileSync(join(tmp, "package", "cli.js"), "utf8");
 
 		let sdkToolsDts: string | null = null;
 		try {
@@ -57,9 +63,79 @@ function fetchCliSource(requestedVersion?: string): {
 			// File may not exist in all versions
 		}
 
+		// Legacy layout (<= 2.1.112): package shipped cli.js directly.
+		const legacyCli = join(tmp, "package", "cli.js");
+		if (existsSync(legacyCli)) {
+			const source = readFileSync(legacyCli, "utf8");
+			return { source, version: pkg.version, sdkToolsDts };
+		}
+
+		// New layout (>= 2.1.113): wrapper package + Bun-compiled native binary
+		// shipped in a platform-specific optional dependency.
+		const source = fetchCliSourceFromNativeBinary(tmp, pkg.version);
 		return { source, version: pkg.version, sdkToolsDts };
 	} finally {
 		rmSync(tmp, { recursive: true, force: true });
+	}
+}
+
+function fetchCliSourceFromNativeBinary(tmp: string, version: string): string {
+	const platformDir = join(tmp, "platform");
+	mkdirSync(platformDir);
+	const platformPkg = `@anthropic-ai/claude-code-linux-x64@${version}`;
+	console.log(pc.cyan(`▸ Fetching ${platformPkg} for embedded bundle...`));
+	execSync(`npm pack ${platformPkg} --pack-destination .`, {
+		cwd: platformDir,
+		stdio: "pipe",
+	});
+	const tgz = execSync("ls *.tgz", {
+		cwd: platformDir,
+		encoding: "utf8",
+	}).trim();
+	execSync(`tar xzf "${tgz}"`, { cwd: platformDir, stdio: "pipe" });
+
+	const binary = readFileSync(join(platformDir, "package", "claude"));
+	return extractBunEmbeddedJs(binary, version);
+}
+
+function extractBunEmbeddedJs(binary: Buffer, version: string): string {
+	// Anchor on the "// Version: X.Y.Z" banner that Claude Code prepends to its
+	// bundle; walk back to the preceding Bun CJS wrapper marker that opens the
+	// module. That is where the embedded JS starts.
+	const versionMarker = Buffer.from(`// Version: ${version}`);
+	const versionIdx = binary.indexOf(versionMarker);
+	if (versionIdx === -1) {
+		throw new Error(
+			`Could not locate "// Version: ${version}" marker in native binary`,
+		);
+	}
+	const bunMarker = Buffer.from("// @bun @bytecode @bun-cjs");
+	const bundleStart = binary.lastIndexOf(bunMarker, versionIdx);
+	if (bundleStart === -1) {
+		throw new Error(
+			"Could not locate '// @bun @bytecode @bun-cjs' marker preceding version banner",
+		);
+	}
+
+	// The surrounding binary contains the Bun runtime + embedded assets, so we
+	// can't just read to EOF. Take a generous slice (real bundle is ~14MB) and
+	// let acorn tell us where the valid JS ends — the first parse error is
+	// always the NUL bytes that follow the CJS wrapper.
+	const MAX_SLICE = 60_000_000;
+	const MIN_SOURCE = 1_000_000;
+	const slice = binary
+		.subarray(bundleStart, Math.min(bundleStart + MAX_SLICE, binary.length))
+		.toString("utf8");
+
+	try {
+		acorn.parse(slice, { sourceType: "module", ecmaVersion: "latest" });
+		return slice;
+	} catch (err: unknown) {
+		const pos = (err as { pos?: number }).pos;
+		if (typeof pos !== "number" || pos < MIN_SOURCE) {
+			throw err;
+		}
+		return slice.slice(0, pos);
 	}
 }
 
