@@ -1,6 +1,6 @@
 {
-	"version": "2.1.112",
-	"extractedAt": "2026-04-17T00:52:54.942Z",
+	"version": "2.1.116",
+	"extractedAt": "2026-04-21T10:08:53.422Z",
 	"contracts": {
 		"tools": [
 			"Agent",
@@ -66,6 +66,7 @@
 			"TaskCompleted",
 			"TaskCreated",
 			"TeammateIdle",
+			"UserPromptExpansion",
 			"UserPromptSubmit",
 			"WorktreeCreate",
 			"WorktreeRemove"

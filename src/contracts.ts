@@ -1,5 +1,5 @@
 // Auto-generated from contracts/claude-code-contracts.json
-// Claude Code v2.1.112 — extracted 2026-04-17T00:52:54.942Z
+// Claude Code v2.1.116 — extracted 2026-04-21T10:08:53.422Z
 // Do not edit manually. Run: npm run generate-contracts
 
 export const TOOLS = new Set<string>([
@@ -67,6 +67,7 @@ export const HOOK_EVENTS = new Set<string>([
 	"TaskCompleted",
 	"TaskCreated",
 	"TeammateIdle",
+	"UserPromptExpansion",
 	"UserPromptSubmit",
 	"WorktreeCreate",
 	"WorktreeRemove",
