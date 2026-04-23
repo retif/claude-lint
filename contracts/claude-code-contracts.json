@@ -1,6 +1,6 @@
 {
-	"version": "2.1.117",
-	"extractedAt": "2026-04-22T03:22:59.674Z",
+	"version": "2.1.118",
+	"extractedAt": "2026-04-23T03:26:50.263Z",
 	"contracts": {
 		"tools": [
 			"Agent",
@@ -52,6 +52,7 @@
 			"PermissionDenied",
 			"PermissionRequest",
 			"PostCompact",
+			"PostToolBatch",
 			"PostToolUse",
 			"PostToolUseFailure",
 			"PreCompact",
@@ -271,7 +272,8 @@
 			"viewMode",
 			"voice",
 			"voiceEnabled",
-			"worktree"
+			"worktree",
+			"wslInheritsWindowsSettings"
 		],
 		"settingsProjectFields": [
 			"permissions"

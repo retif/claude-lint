@@ -1,5 +1,5 @@
 // Auto-generated from contracts/claude-code-contracts.json
-// Claude Code v2.1.117 — extracted 2026-04-22T03:22:59.674Z
+// Claude Code v2.1.118 — extracted 2026-04-23T03:26:50.263Z
 // Do not edit manually. Run: npm run generate-contracts
 
 export const TOOLS = new Set<string>([
@@ -53,6 +53,7 @@ export const HOOK_EVENTS = new Set<string>([
 	"PermissionDenied",
 	"PermissionRequest",
 	"PostCompact",
+	"PostToolBatch",
 	"PostToolUse",
 	"PostToolUseFailure",
 	"PreCompact",
@@ -283,6 +284,7 @@ export const SETTINGS_USER_FIELDS = new Set<string>([
 	"voice",
 	"voiceEnabled",
 	"worktree",
+	"wslInheritsWindowsSettings",
 ]);
 
 export const SETTINGS_PROJECT_FIELDS = new Set<string>([
