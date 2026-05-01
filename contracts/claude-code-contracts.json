@@ -1,6 +1,6 @@
 {
-	"version": "2.1.123",
-	"extractedAt": "2026-04-29T07:00:51.110Z",
+	"version": "2.1.126",
+	"extractedAt": "2026-05-01T07:05:40.539Z",
 	"contracts": {
 		"tools": [
 			"Agent",
@@ -234,6 +234,7 @@
 			"disableBackgroundAgents",
 			"disableSkillShellExecution",
 			"disabledMcpjsonServers",
+			"doneMeansMerged",
 			"editorMode",
 			"effortLevel",
 			"enableAllProjectMcpServers",
@@ -255,6 +256,7 @@
 			"includeCoAuthoredBy",
 			"includeGitInstructions",
 			"inputNeededNotifEnabled",
+			"isolatePeerMachines",
 			"language",
 			"minimumVersion",
 			"model",
