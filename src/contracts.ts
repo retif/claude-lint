@@ -1,5 +1,5 @@
 // Auto-generated from contracts/claude-code-contracts.json
-// Claude Code v2.1.126 — extracted 2026-05-01T07:05:40.539Z
+// Claude Code v2.1.128 — extracted 2026-05-05T00:55:01.330Z
 // Do not edit manually. Run: npm run generate-contracts
 
 export const TOOLS = new Set<string>([
@@ -243,6 +243,7 @@ export const SETTINGS_USER_FIELDS = new Set<string>([
 	"disableAllHooks",
 	"disableAutoMode",
 	"disableBackgroundAgents",
+	"disableRemoteControl",
 	"disableSkillShellExecution",
 	"disabledMcpjsonServers",
 	"doneMeansMerged",

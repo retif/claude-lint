@@ -1,6 +1,6 @@
 {
-	"version": "2.1.126",
-	"extractedAt": "2026-05-01T07:05:40.539Z",
+	"version": "2.1.128",
+	"extractedAt": "2026-05-05T00:55:01.330Z",
 	"contracts": {
 		"tools": [
 			"Agent",
@@ -232,6 +232,7 @@
 			"disableAllHooks",
 			"disableAutoMode",
 			"disableBackgroundAgents",
+			"disableRemoteControl",
 			"disableSkillShellExecution",
 			"disabledMcpjsonServers",
 			"doneMeansMerged",
