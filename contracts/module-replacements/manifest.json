@@ -1,22 +1,22 @@
 {
 	"source": "https://github.com/es-tooling/module-replacements",
 	"ref": "main",
-	"fetchedAt": "2026-09-03T10:24:05.712Z",
+	"fetchedAt": "2026-09-07T10:50:47.578Z",
 	"sources": {
 		"native.json": {
 			"url": "https://raw.githubusercontent.com/es-tooling/module-replacements/main/manifests/native.json",
-			"sha256": "4eb70ebdc5711fb43919f94db31607b5fdaac43263cd0a8b258ace273beb62f1",
-			"mappings": 313
+			"sha256": "fcf08c6015d36a5a7c95d102e60b08a4aa6c6da8c6052f9b89e46464922242a6",
+			"mappings": 315
 		},
 		"micro-utilities.json": {
 			"url": "https://raw.githubusercontent.com/es-tooling/module-replacements/main/manifests/micro-utilities.json",
-			"sha256": "66460ae3bab5b0476ab00c3d511b04920670afebcc7bc443c0005bb0c3629cfc",
-			"mappings": 130
+			"sha256": "17c872e4d8bcd0259e954db66311fb0de1554f1a2ab63a3c8599a1f79cfbbec1",
+			"mappings": 143
 		},
 		"preferred.json": {
 			"url": "https://raw.githubusercontent.com/es-tooling/module-replacements/main/manifests/preferred.json",
-			"sha256": "06ed5132b2b36fac24c6c216de4d0bae57531fbddc2b1f37dd1342c6d89b06d0",
-			"mappings": 465
+			"sha256": "0bff7e9548e71267eac97a48b5624af753763eddcc1c8378c97ef41c74d0d79e",
+			"mappings": 467
 		}
 	}
 }

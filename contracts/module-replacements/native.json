@@ -1789,6 +1789,32 @@
 				"compatKey": "api.btoa"
 			}
 		},
+		"buffer.isUtf8": {
+			"id": "buffer.isUtf8",
+			"type": "native",
+			"description": "Checks whether a buffer, typed array or array buffer contains valid UTF-8, including control characters such as NUL and ESC.",
+			"url": {
+				"type": "node",
+				"id": "api/buffer.html#bufferisutf8input"
+			},
+			"nodeFeatureId": {
+				"moduleName": "node:buffer",
+				"exportName": "isUtf8"
+			}
+		},
+		"class_field_arrow_functions": {
+			"id": "class_field_arrow_functions",
+			"type": "native",
+			"description": "Class fields with arrow functions bind a method to its instance without any constructor work, at the cost of the method no longer living on the prototype",
+			"url": {
+				"type": "mdn",
+				"id": "Web/JavaScript/Reference/Functions/Arrow_functions"
+			},
+			"webFeatureId": {
+				"featureId": "class-syntax",
+				"compatKey": "javascript.classes.public_class_fields"
+			}
+		},
 		"crypto.randomBytes": {
 			"id": "crypto.randomBytes",
 			"type": "native",
@@ -2702,6 +2728,13 @@
 				"atob"
 			]
 		},
+		"auto-bind": {
+			"type": "module",
+			"moduleName": "auto-bind",
+			"replacements": [
+				"class_field_arrow_functions"
+			]
+		},
 		"big-integer": {
 			"type": "module",
 			"moduleName": "big-integer",
@@ -3443,6 +3476,18 @@
 			"replacements": [
 				"URL.canParse"
 			]
+		},
+		"is-utf8": {
+			"type": "module",
+			"moduleName": "is-utf8",
+			"replacements": [
+				"buffer.isUtf8",
+				"TextDecoder"
+			],
+			"url": {
+				"type": "e18e",
+				"id": "is-utf8"
+			}
 		},
 		"isarray": {
 			"type": "module",
