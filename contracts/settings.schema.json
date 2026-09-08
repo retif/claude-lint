@@ -1,6 +1,6 @@
 {
-	"extractedFromClaudeCodeVersion": "2.1.263",
-	"extractedAt": "2026-09-06T03:59:42.001Z",
+	"extractedFromClaudeCodeVersion": "2.1.265",
+	"extractedAt": "2026-09-08T20:58:29.354Z",
 	"schema": {
 		"$schema": "https://json-schema.org/draft/2020-12/schema",
 		"title": "Claude Code settings.json",
@@ -38,7 +38,7 @@
 				"description": "Executable that computes managed settings at startup. Honored only from admin-controlled policy sources."
 			},
 			"policyHelpers": {
-				"description": "`@internal Per-OS variant of policyHelper, keyed by platform: macos, linux, windows, wsl, plus an optional \"default\" entry that is a STATIC settings payload (a JSON object of managed settings, not a helper). Each per-OS entry carries a helper \\u2014 a \"path\", or an inline \"script\" + \"interpreter\" delivered to a fixed interpreter over stdin, either with timeoutMs/refreshIntervalMs \\u2014 its own static \"defaultSettings\" payload, or both; an entry may be payload-only. Selection for a platform walks its chain (the platform's own entry; on wsl the linux entry next): the first helper on the chain wins over policyHelper; if no helper is configured \\u2014 or the selected helper fails at startup or refresh \\u2014 the first payload applies (the chain's \"defaultSettings\" in platform-specific-first order, then the top-level \"default\", applied with no process spawned; unrecognized platforms reach only \"default\"); with no payload either, policyHelper. Honored only from admin-controlled policy sources.`"
+				"description": "`@internal Per-OS variant of policyHelper, keyed by platform: macos, linux, windows, wsl, plus an optional \"default\" entry that is a STATIC settings payload (a JSON object of managed settings, not a helper). Each per-OS entry carries a helper \\u2014 a \"path\", or an inline \"script\" + \"interpreter\" delivered to a fixed interpreter over stdin, either with timeoutMs/refreshIntervalMs \\u2014 its own static \"defaultSettings\" payload, or both; an entry may be payload-only. Selection for a platform walks its chain (the platform's own entry; on wsl the linux entry next): the first helper on the chain wins over policyHelper; if no helper is configured \\u2014 or the selected helper fails at startup or refresh \\u2014 the first payload applies (the chain's \"defaultSettings\" in platform-specific-first order, then the top-level \"default\", applied with no process spawned; unrecognized platforms reach only \"default\"); with no payload either, policyHelper. Honored from admin-controlled policy sources, and from remote managed settings \\u2014 a payload of plain policy as delivered, like any other remote key; a helper, or a payload carrying anything the managed-settings approval dialog lists, only once the settings are verified this session and approved there (policyHelper itself is never honored from remote).`"
 			},
 			"fileSuggestion": {
 				"type": "object",
@@ -2301,7 +2301,7 @@
 			},
 			"forceLoginGatewayUrl": {
 				"type": "string",
-				"format": "uri",
+				"minLength": 1,
 				"description": "Cloud gateway URL to pre-fill and auto-connect to during login, alongside forceLoginMethod: \"gateway\". Honored only from admin-controlled managed settings (MDM / managed-settings.json / policy helper); ignored in user, project, and remote-delivered settings."
 			},
 			"parentSettingsBehavior": {
@@ -2316,7 +2316,7 @@
 					"first-wins",
 					"merge"
 				],
-				"description": "'Controls how the managed settings sources compose. \"first-wins\" (default): the highest-priority source present (server-managed > MDM (managed plist / HKLM) > managed-settings.json) is the managed tier alone. \"merge\": every present source deep-merges with fixed '+\"precedence server-managed > MDM > managed-settings.json \\u2014 scalars \"+\"take the highest source's value and arrays union, except fallbackModel, the restriction allowlists allowedMcpServers, availableModels, strictKnownMarketplaces and allowedChannelPlugins, and sandbox.credentials.awsPairs and sandbox.ripgrep (the highest source that sets one owns it whole), managedMcpServers (server names union; a name set by two sources takes the higher source's whole entry) and the auth pins forceLoginOrgUUID, forceLoginMethod and forceLoginGatewayUrl (highest source only). Honored only from the highest-priority source present; enable it only when every lower source is admin-controlled, since lower sources then contribute entries such as permissions.allow. HKCU and --managed-settings never take part in the merge.\""
+				"description": "'Controls how the managed settings sources compose. \"first-wins\" (default): the highest-priority source present (server-managed > MDM (managed plist / HKLM) > managed-settings.json) is the managed tier alone. \"merge\": every present source deep-merges with fixed '+\"precedence server-managed > MDM > managed-settings.json \\u2014 scalars \"+\"take the highest source's value (a restrictive boolean or enum \\u2014 \"+\"the allowManaged*Only locks, the disable* switches, the sandbox \"+\"lock family \\u2014 takes the strictest value any source sets) and \"+\"arrays union, except fallbackModel, the restriction allowlists allowedMcpServers, availableModels, strictKnownMarketplaces and allowedChannelPlugins, and sandbox.credentials.awsPairs and sandbox.ripgrep (the highest source that sets one owns it whole), modelOverrides (the whole map of the highest source that sets it, dropped when that source sits below the one that sets availableModels), managedMcpServers (server names union; a name set by two sources takes the higher source's whole entry), and the keys taken from the highest source only: the auth pins forceLoginOrgUUID, forceLoginMethod and forceLoginGatewayUrl, the credential helpers apiKeyHelper, awsAuthRefresh, awsCredentialExport, gcpAuthRefresh, otelHeadersHelper and proxyAuthHelper, modelPicker, permissions.defaultMode, parentSettingsBehavior and the policyHelper configuration (env keeps its own per-key union). Honored only from the highest-priority source present; enable it only when every lower source is admin-controlled, since lower sources then contribute entries such as permissions.allow. HKCU and --managed-settings never take part in the merge.\""
 			},
 			"forceLoginOrgUUID": {
 				"anyOf": [
@@ -2660,7 +2660,7 @@
 					},
 					"checker": {
 						"type": "string",
-						"description": "`Which spell checker to run: ${fie.map((i)=>`\"${i}\"`).join(\", \")}, or \"auto\" (default) for the first of those found on PATH`"
+						"description": "`Which spell checker to run: ${Nae.map((i)=>`\"${i}\"`).join(\", \")}, or \"auto\" (default) for the first of those found on PATH`"
 					},
 					"language": {
 						"type": "string",
@@ -2672,7 +2672,7 @@
 					}
 				},
 				"additionalProperties": true,
-				"description": "`Underline misspelled words in the prompt input as you type, using an installed ${fie.slice(0,-1).join(\", \")} or ${fie.at(-1)} (off unless \"enabled\" is true; does nothing if none is installed). Read from user, flag and managed settings only (the whole block from the highest-precedence of those applies); ignored in project .claude/settings.json and .claude/settings.local.json.`"
+				"description": "`Underline misspelled words in the prompt input as you type, using an installed ${Nae.slice(0,-1).join(\", \")} or ${Nae.at(-1)} (off unless \"enabled\" is true; does nothing if none is installed). Read from user, flag and managed settings only (the whole block from the highest-precedence of those applies); ignored in project .claude/settings.json and .claude/settings.local.json.`"
 			},
 			"terminalTitleFromRename": {
 				"type": "boolean",
