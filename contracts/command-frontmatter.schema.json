@@ -1,6 +1,6 @@
 {
-	"extractedFromClaudeCodeVersion": "2.1.266",
-	"extractedAt": "2026-09-09T04:07:48.801Z",
+	"extractedFromClaudeCodeVersion": "2.1.267",
+	"extractedAt": "2026-09-09T20:46:56.197Z",
 	"schema": {
 		"$schema": "https://json-schema.org/draft/2020-12/schema",
 		"title": "Claude Code command .md frontmatter",

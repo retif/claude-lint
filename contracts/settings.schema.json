@@ -1,6 +1,6 @@
 {
-	"extractedFromClaudeCodeVersion": "2.1.266",
-	"extractedAt": "2026-09-09T04:07:48.794Z",
+	"extractedFromClaudeCodeVersion": "2.1.267",
+	"extractedAt": "2026-09-09T20:46:56.189Z",
 	"schema": {
 		"$schema": "https://json-schema.org/draft/2020-12/schema",
 		"title": "Claude Code settings.json",
@@ -871,6 +871,10 @@
 					]
 				},
 				"description": "Enabled plugins using plugin-id@marketplace-id format. Example: { \"formatter@anthropic-tools\": true }. Also supports extended format with version constraints. Settings precedence is user < project < local < flag < policy, so to disable a plugin that project settings enable, set it to false in .claude/settings.local.json \\u2014 setting false in ~/.claude/settings.json is overridden by the project."
+			},
+			"secDefault": {
+				"type": "boolean",
+				"description": "@internal Whether the bundled sec-default plugin holds the outermost seat of the hooks-module chain, ahead of prependPlugins: it keeps the organization's classic (settings) hooks, prompt content, managed settings and tool policy out of reach of the plugins a person installs. Seated by default, wherever hooks modules can load, on a machine with managed settings and for a Team or Enterprise organization; false unseats it. Only honored from managed settings; ignored, with a warning, in user, project, local and --settings sources."
 			},
 			"extraKnownMarketplaces": {
 				"description": "Additional marketplaces to make available for this repository. Typically used in repository .claude/settings.json to ensure team members have required plugin sources."
@@ -2660,7 +2664,7 @@
 					},
 					"checker": {
 						"type": "string",
-						"description": "`Which spell checker to run: ${Nae.map((i)=>`\"${i}\"`).join(\", \")}, or \"auto\" (default) for the first of those found on PATH`"
+						"description": "`Which spell checker to run: ${jle.map((i)=>`\"${i}\"`).join(\", \")}, or \"auto\" (default) for the first of those found on PATH`"
 					},
 					"language": {
 						"type": "string",
@@ -2672,24 +2676,16 @@
 					}
 				},
 				"additionalProperties": true,
-				"description": "`Underline misspelled words in the prompt input as you type, using an installed ${Nae.slice(0,-1).join(\", \")} or ${Nae.at(-1)} (off unless \"enabled\" is true; does nothing if none is installed). Read from user, flag and managed settings only (the whole block from the highest-precedence of those applies); ignored in project .claude/settings.json and .claude/settings.local.json.`"
+				"description": "`Underline misspelled words in the prompt input as you type, using an installed ${jle.slice(0,-1).join(\", \")} or ${jle.at(-1)} (off unless \"enabled\" is true; does nothing if none is installed). Read from user, flag and managed settings only (the whole block from the highest-precedence of those applies); ignored in project .claude/settings.json and .claude/settings.local.json.`"
 			},
 			"terminalTitleFromRename": {
 				"type": "boolean",
 				"description": "Whether /rename updates the terminal tab title (defaults to true). Set to false to keep auto-generated topic titles."
 			},
 			"promptCacheTtl": {
-				"enum": [
-					"5m",
-					"1h"
-				],
 				"description": "Prompt cache TTL for the main conversation (interactive, -p and SDK turns, plus the helpers that run inline with it): \"5m\" or \"1h\". Unset = automatic: 1 hour on a Claude subscription within its usage limits, 5 minutes on an API key, Bedrock, Vertex or Foundry. 1-hour cache writes are billed at a higher rate; the cache stays warm across longer breaks. The CLAUDE_CODE_PROMPT_CACHE_TTL environment variable takes precedence."
 			},
 			"subagentPromptCacheTtl": {
-				"enum": [
-					"5m",
-					"1h"
-				],
 				"description": "\"Prompt cache TTL for everything outside the main conversation \\u2014 subagents, workflows, background and helper requests: \"+'\"5m\" or \"1h\". Unset = automatic (5 minutes unless ENABLE_PROMPT_CACHING_1H=1). The CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL environment variable takes precedence.'"
 			},
 			"alwaysThinkingEnabled": {
@@ -2704,6 +2700,16 @@
 					"xhigh"
 				],
 				"description": "Persisted effort level for supported models."
+			},
+			"maxEffortLevel": {
+				"enum": [
+					"low",
+					"medium",
+					"high",
+					"xhigh",
+					"max"
+				],
+				"description": "Maximum effort level. Anything above it (an /effort or /model pick, --effort, CLAUDE_CODE_EFFORT_LEVEL, a model default) is clamped to it, on every provider including Bedrock, Vertex and Foundry. Combines with an organization's per-model effort cap by taking the lower of the two; across settings files the lowest value wins, and modelSettings.<model>.maxEffortLevel replaces it per model. Enforced client-side: an effort supplied through CLAUDE_CODE_EXTRA_BODY is not clamped."
 			},
 			"modelSettings": {
 				"description": "Per-model settings keyed by canonical model name."
