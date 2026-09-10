@@ -1,6 +1,6 @@
 {
-	"extractedFromClaudeCodeVersion": "2.1.267",
-	"extractedAt": "2026-09-09T20:46:56.189Z",
+	"extractedFromClaudeCodeVersion": "2.1.268",
+	"extractedAt": "2026-09-10T20:41:36.442Z",
 	"schema": {
 		"$schema": "https://json-schema.org/draft/2020-12/schema",
 		"title": "Claude Code settings.json",
@@ -872,9 +872,19 @@
 				},
 				"description": "Enabled plugins using plugin-id@marketplace-id format. Example: { \"formatter@anthropic-tools\": true }. Also supports extended format with version constraints. Settings precedence is user < project < local < flag < policy, so to disable a plugin that project settings enable, set it to false in .claude/settings.local.json \\u2014 setting false in ~/.claude/settings.json is overridden by the project."
 			},
-			"secDefault": {
-				"type": "boolean",
-				"description": "@internal Whether the bundled sec-default plugin holds the outermost seat of the hooks-module chain, ahead of prependPlugins: it keeps the organization's classic (settings) hooks, prompt content, managed settings and tool policy out of reach of the plugins a person installs. Seated by default, wherever hooks modules can load, on a machine with managed settings and for a Team or Enterprise organization; false unseats it. Only honored from managed settings; ignored, with a warning, in user, project, local and --settings sources."
+			"prependPlugins": {
+				"type": "array",
+				"items": {
+					"type": "string"
+				},
+				"description": "Managed plugins (plugin@marketplace ids that managed enabledPlugins sets true) whose hooks run first, outermost, in the listed order: the first id listed sees every event before any other plugin and every result after it. Managed plugins not listed here or in appendPlugins follow the listed ones; user, project and marketplace plugins come after those; then appendPlugins; then the built-in plugins. The bundled sec-default@builtin seats itself outermost (on a machine with managed settings and for Team and Enterprise organizations) unless this list is set, in which case list sec-default@builtin where it should sit or leave it out. Any other id that is not an enabled managed plugin is skipped; an id listed in both keys is prepended. Only honored from managed settings (or, on a machine with none, from user settings for your own plugins); ignored in project, local and --settings sources."
+			},
+			"appendPlugins": {
+				"type": "array",
+				"items": {
+					"type": "string"
+				},
+				"description": "Managed plugins (plugin@marketplace ids that managed enabledPlugins sets true) whose hooks run last among plugins, innermost, in the listed order: the last id listed sits just above the built-in plugins and sees each event as every other plugin left it. Only honored from managed settings (or, on a machine with none, from user settings for your own plugins); ignored in project, local and --settings sources."
 			},
 			"extraKnownMarketplaces": {
 				"description": "Additional marketplaces to make available for this repository. Typically used in repository .claude/settings.json to ensure team members have required plugin sources."
@@ -2308,6 +2318,13 @@
 				"minLength": 1,
 				"description": "Cloud gateway URL to pre-fill and auto-connect to during login, alongside forceLoginMethod: \"gateway\". Honored only from admin-controlled managed settings (MDM / managed-settings.json / policy helper); ignored in user, project, and remote-delivered settings."
 			},
+			"gatewayInternalNetworks": {
+				"type": "array",
+				"items": {
+					"type": "string"
+				},
+				"description": "IPv4 CIDR blocks (at most 4, each /8 to /32, not overlapping) your Cloud gateway sits in: the public block your organization numbers its internal network from, which lets /login reach a gateway there. A block must lie entirely outside private space, where /login accepts a gateway without this key. /login accepts a gateway inside a listed block over a direct connection only, and only when this machine's own address on that connection is inside the same block, so /login must happen from a machine whose own address is inside the block (not through a proxy, VPN pool, container or NAT segment outside it). A bar against copied settings files, not proof of location. Honored only from admin-controlled managed settings (MDM / managed-settings.json / policy helper); ignored in user, project, and remote-delivered settings."
+			},
 			"parentSettingsBehavior": {
 				"enum": [
 					"first-wins",
@@ -2320,7 +2337,7 @@
 					"first-wins",
 					"merge"
 				],
-				"description": "'Controls how the managed settings sources compose. \"first-wins\" (default): the highest-priority source present (server-managed > MDM (managed plist / HKLM) > managed-settings.json) is the managed tier alone. \"merge\": every present source deep-merges with fixed '+\"precedence server-managed > MDM > managed-settings.json \\u2014 scalars \"+\"take the highest source's value (a restrictive boolean or enum \\u2014 \"+\"the allowManaged*Only locks, the disable* switches, the sandbox \"+\"lock family \\u2014 takes the strictest value any source sets) and \"+\"arrays union, except fallbackModel, the restriction allowlists allowedMcpServers, availableModels, strictKnownMarketplaces and allowedChannelPlugins, and sandbox.credentials.awsPairs and sandbox.ripgrep (the highest source that sets one owns it whole), modelOverrides (the whole map of the highest source that sets it, dropped when that source sits below the one that sets availableModels), managedMcpServers (server names union; a name set by two sources takes the higher source's whole entry), and the keys taken from the highest source only: the auth pins forceLoginOrgUUID, forceLoginMethod and forceLoginGatewayUrl, the credential helpers apiKeyHelper, awsAuthRefresh, awsCredentialExport, gcpAuthRefresh, otelHeadersHelper and proxyAuthHelper, modelPicker, permissions.defaultMode, parentSettingsBehavior and the policyHelper configuration (env keeps its own per-key union). Honored only from the highest-priority source present; enable it only when every lower source is admin-controlled, since lower sources then contribute entries such as permissions.allow. HKCU and --managed-settings never take part in the merge.\""
+				"description": "'Controls how the managed settings sources compose. \"first-wins\" (default): the highest-priority source present (server-managed > MDM (managed plist / HKLM) > managed-settings.json) is the managed tier alone. \"merge\": every present source deep-merges with fixed '+\"precedence server-managed > MDM > managed-settings.json \\u2014 scalars \"+\"take the highest source's value (a restrictive boolean or enum \\u2014 \"+\"the allowManaged*Only locks, the disable* switches, the sandbox \"+\"lock family \\u2014 takes the strictest value any source sets) and \"+\"arrays union, except fallbackModel, the restriction allowlists allowedMcpServers, availableModels, strictKnownMarketplaces and allowedChannelPlugins, and sandbox.credentials.awsPairs and sandbox.ripgrep (the highest source that sets one owns it whole), modelOverrides (the whole map of the highest source that sets it, dropped when that source sits below the one that sets availableModels), managedMcpServers (server names union; a name set by two sources takes the higher source's whole entry), and the keys taken from the highest source only: the auth pins forceLoginOrgUUID, forceLoginMethod, forceLoginGatewayUrl and gatewayInternalNetworks, the credential helpers apiKeyHelper, awsAuthRefresh, awsCredentialExport, gcpAuthRefresh, otelHeadersHelper and proxyAuthHelper, modelPicker, permissions.defaultMode, parentSettingsBehavior and the policyHelper configuration (env keeps its own per-key union). Honored only from the highest-priority source present; enable it only when every lower source is admin-controlled, since lower sources then contribute entries such as permissions.allow. HKCU and --managed-settings never take part in the merge.\""
 			},
 			"forceLoginOrgUUID": {
 				"anyOf": [
@@ -2664,7 +2681,7 @@
 					},
 					"checker": {
 						"type": "string",
-						"description": "`Which spell checker to run: ${jle.map((i)=>`\"${i}\"`).join(\", \")}, or \"auto\" (default) for the first of those found on PATH`"
+						"description": "`Which spell checker to run: ${Xce.map((i)=>`\"${i}\"`).join(\", \")}, or \"auto\" (default) for the first of those found on PATH`"
 					},
 					"language": {
 						"type": "string",
@@ -2676,16 +2693,24 @@
 					}
 				},
 				"additionalProperties": true,
-				"description": "`Underline misspelled words in the prompt input as you type, using an installed ${jle.slice(0,-1).join(\", \")} or ${jle.at(-1)} (off unless \"enabled\" is true; does nothing if none is installed). Read from user, flag and managed settings only (the whole block from the highest-precedence of those applies); ignored in project .claude/settings.json and .claude/settings.local.json.`"
+				"description": "`Underline misspelled words in the prompt input as you type, using an installed ${Xce.slice(0,-1).join(\", \")} or ${Xce.at(-1)} (off unless \"enabled\" is true; does nothing if none is installed). Read from user, flag and managed settings only (the whole block from the highest-precedence of those applies); ignored in project .claude/settings.json and .claude/settings.local.json.`"
 			},
 			"terminalTitleFromRename": {
 				"type": "boolean",
 				"description": "Whether /rename updates the terminal tab title (defaults to true). Set to false to keep auto-generated topic titles."
 			},
 			"promptCacheTtl": {
+				"enum": [
+					"5m",
+					"1h"
+				],
 				"description": "Prompt cache TTL for the main conversation (interactive, -p and SDK turns, plus the helpers that run inline with it): \"5m\" or \"1h\". Unset = automatic: 1 hour on a Claude subscription within its usage limits, 5 minutes on an API key, Bedrock, Vertex or Foundry. 1-hour cache writes are billed at a higher rate; the cache stays warm across longer breaks. The CLAUDE_CODE_PROMPT_CACHE_TTL environment variable takes precedence."
 			},
 			"subagentPromptCacheTtl": {
+				"enum": [
+					"5m",
+					"1h"
+				],
 				"description": "\"Prompt cache TTL for everything outside the main conversation \\u2014 subagents, workflows, background and helper requests: \"+'\"5m\" or \"1h\". Unset = automatic (5 minutes unless ENABLE_PROMPT_CACHING_1H=1). The CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL environment variable takes precedence.'"
 			},
 			"alwaysThinkingEnabled": {

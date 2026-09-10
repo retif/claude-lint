@@ -1,6 +1,6 @@
 {
-	"extractedFromClaudeCodeVersion": "2.1.267",
-	"extractedAt": "2026-09-09T20:46:56.146Z",
+	"extractedFromClaudeCodeVersion": "2.1.268",
+	"extractedAt": "2026-09-10T20:41:36.397Z",
 	"schema": {
 		"$schema": "https://json-schema.org/draft/2020-12/schema",
 		"title": "Claude Code plugin.json",
